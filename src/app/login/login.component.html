@@ -1,0 +1,32 @@
+<div class="container h-100">
+  <div class="row h-100 justify-content-center align-items-center">
+    <div class="">
+      <div class="alert alert-danger" role="alert" *ngIf="errorMessage" style="width:500px;">
+        {{errorMessage}}
+      </div>
+      <form [formGroup]="form" style="width:500px;" class="border rounded bg-light d-flex justify-content-center">
+        <fieldset style="width:300px;">
+          <div class="form-buttons text-center" style="margin-bottom:100px">
+            <button class="btn btn-link" style="font-size: larger" (click)="login()">Login
+            </button>
+          </div>
+          <div class="form-group">
+            <input id="email" name="email" placeholder="email" formControlName="email" autocomplete="username"
+                   class="form-control border-top-0 border-right-0 border-left-0 rounded-0 bg-light">
+          </div>
+          <div class="form-group">
+            <input id="password" placeholder="password" name="password" formControlName="password" type="password"
+                   autocomplete="current-password"
+                   class="form-control border-top-0 border-right-0 border-left-0 rounded-0 bg-light">
+          </div>
+          <div class="form-buttons text-center" style="margin-top:100px">
+            <button class="btn btn-link" (click)="retrieveForgotten()">Forgot password?
+            </button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+
+

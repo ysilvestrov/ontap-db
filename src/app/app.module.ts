@@ -12,6 +12,7 @@ import {root} from 'rxjs/internal-compatibility';
 import {tokenGetter} from './auth.service';
 import {HttpClientModule} from '@angular/common/http';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { DashboardTopbarComponent } from './dashboard-topbar/dashboard-topbar.component';
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginComponent},
@@ -31,7 +32,8 @@ const appRoutes: Routes = [
     AppComponent,
     LoginComponent,
     PageNotFoundComponent,
-    DashboardComponent
+    DashboardComponent,
+    DashboardTopbarComponent
   ],
   imports: [
     BrowserModule,
