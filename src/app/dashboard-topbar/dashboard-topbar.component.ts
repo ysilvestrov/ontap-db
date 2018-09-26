@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {AuthService} from '../auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-topbar',
@@ -9,13 +10,18 @@ import {AuthService} from '../auth.service';
 export class DashboardTopbarComponent implements OnInit {
   public pubs: string[];
   @Input() pub: string;
-  private currentUser: string;
+  public currentUser: string;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.pubs = this.authService.getUserPubs();
-    this.currentUser = this.authService.getUserName()
+    this.currentUser = this.authService.getUserName();
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
 }

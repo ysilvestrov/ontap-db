@@ -1,0 +1,6 @@
+{
+  "/api": {
+    "target": "https://ontap.in.ua",
+    "secure": true
+  }
+}

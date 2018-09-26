@@ -15,7 +15,7 @@ export function tokenGetter() {
 })
 export class AuthService {
 
-  private url = 'http://localhost:52416/api';
+  private url = '/api';
   constructor(public jwtHelper: JwtHelperService, private http: HttpClient) {}
 
   public isTokenExpired() {
