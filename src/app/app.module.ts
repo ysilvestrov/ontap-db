@@ -13,19 +13,23 @@ import {tokenGetter} from './auth.service';
 import {HttpClientModule} from '@angular/common/http';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { DashboardTopbarComponent } from './dashboard-topbar/dashboard-topbar.component';
+import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
+import { TapsQueueComponent } from './taps-queue/taps-queue.component';
+import { TapsPrintComponent } from './taps-print/taps-print.component';
+
+const itemRoutes: Routes = [
+  { path: 'queue', component: TapsQueueComponent},
+  { path: 'print', component: TapsPrintComponent},
+];
 
 const appRoutes: Routes = [
   { path: 'login', component: LoginComponent},
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]},
-  {
-    path: '',
-    redirectTo: '/dashboard',
-    pathMatch: 'full',
-    canActivate: [AuthGuard]
-  },
+  { path: 'dashboard/:id', component: DashboardComponent, canActivate: [AuthGuard]},
+  { path: 'dashboard/:id', component: DashboardComponent, canActivate: [AuthGuard], children:itemRoutes},
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full'  },
   { path: '**', component: PageNotFoundComponent }
 ];
-
 
 @NgModule({
   declarations: [
@@ -33,7 +37,10 @@ const appRoutes: Routes = [
     LoginComponent,
     PageNotFoundComponent,
     DashboardComponent,
-    DashboardTopbarComponent
+    DashboardTopbarComponent,
+    DashboardSidebarComponent,
+    TapsQueueComponent,
+    TapsPrintComponent
   ],
   imports: [
     BrowserModule,
@@ -53,3 +60,5 @@ const appRoutes: Routes = [
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+

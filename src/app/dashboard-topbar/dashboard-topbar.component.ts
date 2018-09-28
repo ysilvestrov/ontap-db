@@ -24,4 +24,8 @@ export class DashboardTopbarComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
+  navigate(pub) {
+    this.router.navigate(['/dashboard', pub, 'queue']);
+  }
+
 }

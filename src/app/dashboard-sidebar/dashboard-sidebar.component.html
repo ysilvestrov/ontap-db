@@ -1,0 +1,12 @@
+<nav class="nav navbar-light navbar-toggleable-sm bg-light">
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarWEX"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+          (click)="toggleMenu()">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="navbar-collapse collapse flex-column mt-md-0 mt-4 pt-md-0 pt-4" id="navbarWEX"
+       [ngbCollapse]="isCollapsed">
+    <button class="btn btn-link" (click)="navigate('queue')">Queue</button>
+    <button class="btn btn-link" (click)="navigate('print')">Print</button>
+  </div>
+</nav>
