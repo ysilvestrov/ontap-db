@@ -1,3 +1,25 @@
-<p>
-  taps-queue works!
-</p>
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage" style="width:500px;">
+  {{errorMessage}}
+</div>
+<div>Dashboard</div>
+<table>
+  <thead>
+  <tr>
+    <th>Кран</th>
+    <th>Производитель</th>
+    <th>Сорт</th>
+    <th>ABV</th>
+    <th>OG</th>
+    <th>IBU</th>
+    <th>Поставили</th>
+    <th>Остаток</th>
+    <th>Прямая очередь</th>
+    <th>Общая очередь</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let tap of taps">
+    <td>{{tap.number}}</td>
+  </tr>
+  </tbody>
+</table>

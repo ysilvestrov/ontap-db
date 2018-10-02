@@ -26,7 +26,7 @@ const appRoutes: Routes = [
   { path: 'login', component: LoginComponent},
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]},
   { path: 'dashboard/:id', component: DashboardComponent, canActivate: [AuthGuard]},
-  { path: 'dashboard/:id', component: DashboardComponent, canActivate: [AuthGuard], children:itemRoutes},
+  { path: 'dashboard/:id', component: DashboardComponent, canActivate: [AuthGuard], children: itemRoutes},
   { path: '', redirectTo: '/dashboard', pathMatch: 'full'  },
   { path: '**', component: PageNotFoundComponent }
 ];
