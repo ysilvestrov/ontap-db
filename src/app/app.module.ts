@@ -16,6 +16,7 @@ import { DashboardTopbarComponent } from './dashboard-topbar/dashboard-topbar.co
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
 import { TapsQueueComponent } from './taps-queue/taps-queue.component';
 import { TapsPrintComponent } from './taps-print/taps-print.component';
+import { SortByTapPipe } from './sort-by-tap.pipe';
 
 const itemRoutes: Routes = [
   { path: 'queue', component: TapsQueueComponent},
@@ -40,7 +41,8 @@ const appRoutes: Routes = [
     DashboardTopbarComponent,
     DashboardSidebarComponent,
     TapsQueueComponent,
-    TapsPrintComponent
+    TapsPrintComponent,
+    SortByTapPipe
   ],
   imports: [
     BrowserModule,

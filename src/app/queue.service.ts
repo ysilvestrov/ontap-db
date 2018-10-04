@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {User} from './user';
-import {Tap} from './tap';
+import {Tap} from './ontap.models';
 
 @Injectable({
   providedIn: 'root'

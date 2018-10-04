@@ -3,7 +3,7 @@ import {QueueService} from '../queue.service';
 import {Subscription} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute} from '@angular/router';
-import {Tap} from '../tap';
+import {Beer, BeerKegOnTap, ITap, Tap} from '../ontap.models';
 
 @Component({
   selector: 'app-taps-queue',
@@ -15,6 +15,7 @@ export class TapsQueueComponent implements OnInit {
   private id: string;
   public taps: Tap[];
   public errorMessage: any;
+  public kegs: BeerKegOnTap[];
 
   constructor(
     private queueService: QueueService,
@@ -22,14 +23,47 @@ export class TapsQueueComponent implements OnInit {
     private route: ActivatedRoute,
   ) {
     this.routeSubscription = route.parent.params.subscribe(
-      params => this.id = params['id']);
+      params => {this.id = params['id']; this.getTaps()});
   }
 
   ngOnInit() {
-    this.queueService.getTaps(this.id).subscribe(
-      (taps => {this.taps = taps; }),
-      (error1 => {this.errorMessage = error1; })
-      );
+    // this.getTaps();
   }
 
+  private isNumber(value: string | number): boolean {
+    return !isNaN(Number(value.toString()));
+  }
+
+  private getTaps() {
+    this.queueService.getTaps(this.id).subscribe(
+      (taps => {
+        this.taps = taps.sort((a: ITap, b: ITap) => {
+          if (this.isNumber(a.number) && this.isNumber(b.number)) {
+            if (Number(a.number) < Number(b.number)) {
+              return -1;
+            } else if (Number(a.number) > Number(b.number)) {
+              return 1;
+            } else {
+              return 0;
+            }
+          } else if (a.number < b.number) {
+            return -1;
+          } else if (a.number > b.number) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+        this.kegs = [];
+        this.taps.forEach(
+          t => {
+            this.kegs[t.number] = t.beerKegsOnTap.reduce((bk1, bk2) =>
+              bk1.installTime < bk2.installTime ? bk1 : bk2);
+          });
+      }),
+      (error1 => {
+        this.errorMessage = error1;
+      })
+    );
+  }
 }
