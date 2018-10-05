@@ -1,0 +1,12 @@
+{
+  "name": "ontap-dashboard",
+  "repository": "https://github.com/ysilvestrov/ontap-db",
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs"
+    }
+  ],
+  "env": {
+    "NPM_CONFIG_PRODUCTION": true
+  }
+}
