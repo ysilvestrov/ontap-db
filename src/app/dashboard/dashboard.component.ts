@@ -23,7 +23,10 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     if (!this.id) {
-      this.router.navigate(['dashboard', this.authService.getUserPubs()[0], 'queue']);
+      const pubs = this.authService.getUserPubs();
+      if (pubs) {
+        this.router.navigate(['dashboard', pubs[0], 'queue']);
+      }
     }
   }
 
