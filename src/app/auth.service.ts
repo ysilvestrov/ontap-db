@@ -3,7 +3,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {User} from './user';
 import {Observable, throwError} from 'rxjs';
-import {catchError, shareReplay, tap} from 'rxjs/internal/operators';
+import {catchError, map, shareReplay, tap} from 'rxjs/internal/operators';
 import * as moment from 'moment';
 
 export function tokenGetter() {
@@ -29,9 +29,15 @@ export class AuthService {
         'Content-Type':  'application/json'
       })
     };
-    let res = this.http
-      .post<User>(`${this.url}/jwt`, {name: email, password}, httpOptions);
-    res.subscribe(this.setSession, this.handleError);
+    const res = this.http
+      .post<any>(`${this.url}/jwt`, {name: email, password}, httpOptions).pipe(
+      tap(authResult => {    console.log('Setting session');
+        const expiresAt = moment().add(authResult.expiresIn, 'second');
+
+        localStorage.setItem('auth_token', authResult.accessToken);
+        localStorage.setItem('auth_expires_at', JSON.stringify(expiresAt.valueOf()) );}),
+      catchError(this.handleError)
+    );
     return res;
   }
 
