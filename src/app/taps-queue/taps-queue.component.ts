@@ -4,6 +4,7 @@ import {Subscription} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute} from '@angular/router';
 import {Beer, BeerKegOnTap, ITap, Tap} from '../ontap.models';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-taps-queue',
@@ -16,6 +17,7 @@ export class TapsQueueComponent implements OnInit {
   public taps: Tap[];
   public errorMessage: any;
   public kegs: BeerKegOnTap[];
+  public weights: number[];
 
   constructor(
     private queueService: QueueService,
@@ -23,7 +25,8 @@ export class TapsQueueComponent implements OnInit {
     private route: ActivatedRoute,
   ) {
     this.routeSubscription = route.parent.params.subscribe(
-      params => {this.id = params['id']; this.getTaps()});
+      params => {this.id = params['id']; this.getTaps(); }
+      );
   }
 
   ngOnInit() {
@@ -55,14 +58,35 @@ export class TapsQueueComponent implements OnInit {
           }
         });
         this.kegs = [];
+        this.weights = [];
         this.taps.forEach(
           t => {
-            this.kegs[t.number] = t.beerKegsOnTap.reduce((bk1, bk2) =>
-              bk1.installTime < bk2.installTime ? bk1 : bk2);
+            const kegOnTaps = t.beerKegsOnTap
+              .filter(bk =>
+                bk.deinstallTime == null || moment(bk.deinstallTime).isSameOrAfter(moment())
+              );
+            if (kegOnTaps.length > 0) {
+              this.kegs[t.number] = kegOnTaps.length > 1 ?
+                kegOnTaps.reduce((bk1, bk2) =>
+                  bk1.installTime < bk2.installTime ? bk2 : bk1) : kegOnTaps[0];
+
+              const keg = this.kegs[t.number];
+              if (keg && keg.keg && keg.keg.keg) {
+                const bkeg = keg.keg;
+                const bbkeg = keg.keg.keg;
+                const beer = bkeg.beer;
+                this.weights[t.number] = bkeg.weights.length <= 0 ?
+                  bbkeg.volume :
+                  (bkeg.weights[bkeg.weights.length - 1].weight - bbkeg.emptyWeight)
+                  / (
+                  (beer.gravity || 10) * 0.04
+                  - 0.0000753 * (beer.alcohol || 5));
+              }
+            }
           });
       }),
       (error1 => {
-        this.errorMessage = error1;
+        this.errorMessage = error1.message;
       })
     );
   }

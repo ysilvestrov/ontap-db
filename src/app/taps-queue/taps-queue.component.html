@@ -20,16 +20,28 @@
   <tbody>
   <tr *ngFor="let tap of taps">
     <td>{{tap.number}}</td>
-    <ng-container *ngIf="kegs[tap.number]">
-      <td>{{kegs[tap.number].keg.beer.brewery.name}}</td>
-      <td>{{kegs[tap.number].keg.beer.name}}</td>
-      <td>{{kegs[tap.number].keg.beer.alcohol}}</td>
-      <td>{{kegs[tap.number].keg.beer.gravity}}</td>
-      <td>{{kegs[tap.number].keg.beer.ibu}}</td>
-      <td>{{kegs[tap.number].installTime | date:'short'}}</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-    </ng-container>
+    <td>
+      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.brewery.name}}</ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.name}}</ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.alcohol}}</ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.gravity}}</ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.ibu}}</ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].installTime | date:'short'}}</ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="weights[tap.number]">{{weights[tap.number] | number:'1.1-1'}}</ng-container>
+    </td>
+    <td>&nbsp;</td>
     <td>&nbsp;</td>
     <td>&nbsp;</td>
   </tr>
