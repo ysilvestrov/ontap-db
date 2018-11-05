@@ -17,6 +17,7 @@ import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar
 import { TapsQueueComponent } from './taps-queue/taps-queue.component';
 import { TapsPrintComponent } from './taps-print/taps-print.component';
 import { SortByTapPipe } from './sort-by-tap.pipe';
+import {MomentModule} from 'ngx-moment';
 
 const itemRoutes: Routes = [
   { path: 'queue', component: TapsQueueComponent},
@@ -56,7 +57,8 @@ const appRoutes: Routes = [
         blacklistedRoutes: ['localhost:3001/auth/']
       }
     }),
-    NgbModule
+    NgbModule,
+    MomentModule
   ],
   providers: [],
   bootstrap: [AppComponent]

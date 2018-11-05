@@ -36,14 +36,25 @@
       <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.ibu}}</ng-container>
     </td>
     <td>
-      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].installTime | date:'short'}}</ng-container>
+      <ng-container *ngIf="kegs[tap.number]">
+        <time>{{kegs[tap.number].installTime | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
+      </ng-container>
     </td>
     <td>
       <ng-container *ngIf="weights[tap.number]">{{weights[tap.number] | number:'1.1-1'}}</ng-container>
     </td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
+    <td>
+      <ng-container *ngIf="straightQueue[tap.number]">
+        <span *ngFor="let keg of straightQueue[tap.number]">
+          {{keg.keg.beer.brewery.name}}-{{keg.keg.beer.name}}
+        </span>
+      </ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="queue && queue[tap.number]">
+          {{queue[tap.number].keg.beer.brewery.name}}-{{queue[tap.number].keg.beer.name}}
+      </ng-container>
+    </td>
   </tr>
   </tbody>
 </table>
