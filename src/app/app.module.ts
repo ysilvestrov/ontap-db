@@ -18,10 +18,12 @@ import { TapsQueueComponent } from './taps-queue/taps-queue.component';
 import { TapsPrintComponent } from './taps-print/taps-print.component';
 import { SortByTapPipe } from './sort-by-tap.pipe';
 import {MomentModule} from 'ngx-moment';
+import { StorageComponent } from './storage/storage.component';
 
 const itemRoutes: Routes = [
   { path: 'queue', component: TapsQueueComponent},
   { path: 'print', component: TapsPrintComponent},
+  { path: 'storage', component: StorageComponent},
 ];
 
 const appRoutes: Routes = [
@@ -43,7 +45,8 @@ const appRoutes: Routes = [
     DashboardSidebarComponent,
     TapsQueueComponent,
     TapsPrintComponent,
-    SortByTapPipe
+    SortByTapPipe,
+    StorageComponent
   ],
   imports: [
     BrowserModule,

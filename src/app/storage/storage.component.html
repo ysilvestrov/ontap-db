@@ -1,0 +1,47 @@
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage" style="width:500px;">
+  {{errorMessage}}
+</div>
+<div>Dashboard</div>
+<table class="table">
+  <thead>
+  <tr>
+    <th>Производитель</th>
+    <th>Сорт</th>
+    <th>ABV</th>
+    <th>OG</th>
+    <th>IBU</th>
+    <th>Упаковано</th>
+    <th>Годно до</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let keg of kegs">
+    <td>
+      <ng-container *ngIf="keg.beer">{{keg.beer.brewery.name}}</ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="keg.beer">{{keg.beer.name}}</ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="keg.beer">{{keg.beer.alcohol}}</ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="keg.beer">{{keg.beer.gravity}}</ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="keg.beer">{{keg.beer.ibu}}</ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="keg">
+        <time>{{keg.packageDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
+      </ng-container>
+    </td>
+    <td>
+      <ng-container *ngIf="(keg && keg.bestBeforeDate); else elseBlock">
+        <time>{{keg.bestBeforeDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
+      </ng-container>
+      <ng-template #elseBlock>N/A</ng-template>
+    </td>
+  </tr>
+  </tbody>
+</table>
