@@ -1,7 +1,7 @@
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage" style="width:500px;">
   {{errorMessage}}
 </div>
-<div>Dashboard</div>
+<div>Склад</div>
 <table class="table">
   <thead>
   <tr>
@@ -15,7 +15,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let keg of kegs">
+  <tr *ngFor="let keg of kegs" [contextMenu]="basicMenu" [contextMenuSubject]="keg">
     <td>
       <ng-container *ngIf="keg.beer">{{keg.beer.brewery.name}}</ng-container>
     </td>
@@ -33,15 +33,23 @@
     </td>
     <td>
       <ng-container *ngIf="keg">
-        <time>{{keg.packageDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
+        <time *ngIf="keg.packageDate">{{keg.packageDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
       </ng-container>
     </td>
     <td>
-      <ng-container *ngIf="(keg && keg.bestBeforeDate); else elseBlock">
-        <time>{{keg.bestBeforeDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
+      <ng-container *ngIf="keg">
+        <time *ngIf="keg.bestBeforeDate">{{keg.bestBeforeDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
       </ng-container>
-      <ng-template #elseBlock>N/A</ng-template>
     </td>
   </tr>
   </tbody>
 </table>
+
+<context-menu>
+  <ng-template contextMenuItem let-keg (execute)="addToQueue($event.item)">
+    &nbsp;Добавить "{{keg?.beer?.brewery?.name}} - {{keg?.beer?.name}}" в общую очередь&nbsp;
+  </ng-template>
+  <ng-template contextMenuItem let-keg (execute)="removeFromStorage($event.item)">
+    &nbsp;Удалить "{{keg?.beer?.brewery?.name}} - {{keg?.beer?.name}}" из склада&nbsp;
+  </ng-template>
+</context-menu>

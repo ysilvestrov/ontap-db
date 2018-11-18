@@ -18,7 +18,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let tap of taps">
+  <tr *ngFor="let tap of taps" [contextMenu]="tapMenu" [contextMenuSubject]="tap">
     <td>{{tap.number}}</td>
     <td>
       <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.brewery.name}}</ng-container>
@@ -37,24 +37,52 @@
     </td>
     <td>
       <ng-container *ngIf="kegs[tap.number]">
-        <time>{{kegs[tap.number].installTime | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
+        <time *ngIf="kegs[tap.number].installTime">{{kegs[tap.number].installTime | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
       </ng-container>
     </td>
     <td>
       <ng-container *ngIf="weights[tap.number]">{{weights[tap.number] | number:'1.1-1'}}</ng-container>
     </td>
     <td>
-      <ng-container *ngIf="straightQueue[tap.number]">
-        <span *ngFor="let keg of straightQueue[tap.number]">
+      <ng-container *ngIf="directQueue[tap.number]">
+        <span *ngFor="let keg of directQueue[tap.number]">
           {{keg.keg.beer.brewery.name}}-{{keg.keg.beer.name}}
         </span>
       </ng-container>
+      <section dndDropzone (dndDrop)="addToDirectQueue($event.data, tap)">&nbsp;
+        <!--optional placeholder element for dropzone-->
+        <!--will be removed from DOM on init-->
+        <div style="border: 1px orangered solid; border-radius: 5px; padding: 15px;"
+             dndPlaceholderRef>
+          &nbsp;
+        </div>
+
+      </section>
     </td>
     <td>
       <ng-container *ngIf="queue && queue[tap.number]">
+        <div [dndDraggable]="queue[tap.number]"
+             [dndEffectAllowed]="'all'"
+             [dndDisableIf]="false">
           {{queue[tap.number].keg.beer.brewery.name}}-{{queue[tap.number].keg.beer.name}}
+        </div>
       </ng-container>
     </td>
   </tr>
   </tbody>
 </table>
+
+<context-menu #tapMenu>
+  <ng-template contextMenuItem let-tap [enabled]="hasKegOnTap" (execute)="showWeights($event.item)">
+    &nbsp;Взвесить&nbsp;
+  </ng-template>
+  <ng-template contextMenuItem let-tap [enabled]="hasKegOnTap" (execute)="removeBeer($event.item)">
+    &nbsp;Снять пиво с крана&nbsp;
+  </ng-template>
+  <ng-template contextMenuItem let-tap [enabled]="hasKegsOnlyInQueue" (execute)="setFromDirectQueue($event.item)">
+    &nbsp;Поставить пиво из прямой очереди&nbsp;
+  </ng-template>
+<!--  <ng-template contextMenuItem let-tap (execute)="addToQueue($event.item)">
+    &nbsp;Добавить "{{keg?.beer?.brewery?.name}} - {{keg?.beer?.name}}" в общую очередь&nbsp;
+  </ng-template>-->
+</context-menu>

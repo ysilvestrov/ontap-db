@@ -1,10 +1,13 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {QueueService} from '../queue.service';
 import {Subscription} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute} from '@angular/router';
 import {BeerKegOnTap, ITap, Tap} from '../ontap.models';
 import * as moment from 'moment';
+import {ContextMenuComponent} from 'ngx-contextmenu';
+import { DndDropEvent } from 'ngx-drag-drop';
+import {TapService} from '../tap.service';
 
 @Component({
   selector: 'app-taps-queue',
@@ -14,6 +17,7 @@ import * as moment from 'moment';
 export class TapsQueueComponent implements OnInit {
   constructor(
     private queueService: QueueService,
+    private tapService: TapService,
     private http: HttpClient,
     private route: ActivatedRoute,
   ) {
@@ -24,13 +28,16 @@ export class TapsQueueComponent implements OnInit {
       }
     );
   }
+
+  @ViewChild('tapMenu') public tapMenu: ContextMenuComponent;
+
   private routeSubscription: Subscription;
   private id: string;
   public taps: Tap[];
   public errorMessage: any;
   public kegs: BeerKegOnTap[];
   public queue: BeerKegOnTap[];
-  public straightQueue: BeerKegOnTap[][];
+  public directQueue: BeerKegOnTap[][];
   public weights: number[];
 
   private static calculateRemainingVolume(weight, emptyWeight, gravity, alcohol) {
@@ -89,7 +96,7 @@ export class TapsQueueComponent implements OnInit {
         this.taps = taps.sort(TapsQueueComponent.tapsCompare);
         this.kegs = [];
         this.weights = [];
-        this.straightQueue = [];
+        this.directQueue = [];
         this.queue = [];
         this.taps.forEach(
           t => {
@@ -100,25 +107,7 @@ export class TapsQueueComponent implements OnInit {
                 || moment(bk.deinstallTime).isSameOrAfter(moment())
               );
             if (kegOnTaps.length > 0) {
-              kegOnTaps.sort(TapsQueueComponent.timeCompare);
-
-              this.kegs[t.number] = kegOnTaps[0];
-              this.straightQueue[t.number] = kegOnTaps.slice(1);
-
-              const keg = this.kegs[t.number];
-              if (keg && keg.keg && keg.keg.keg) {
-                const bkeg = keg.keg;
-                const bbkeg = keg.keg.keg;
-                const beer = bkeg.beer;
-                this.weights[t.number] = bkeg.weights.length <= 0 ?
-                  bbkeg.volume :
-                  TapsQueueComponent.calculateRemainingVolume(
-                    bkeg.weights[bkeg.weights.length - 1].weight,
-                    bbkeg.emptyWeight,
-                    beer.gravity || 10,
-                    beer.alcohol || 5
-                  );
-              }
+              this.processBeerKegsOnTap(kegOnTaps, t.number);
             }
           });
         this.queueService.getQueue(this.id).subscribe(
@@ -138,4 +127,91 @@ export class TapsQueueComponent implements OnInit {
     );
   }
 
+  private addToDirectQueue(keg: BeerKegOnTap, tap: Tap) {
+    this.tapService.addToDirectQueue(tap.id, keg).subscribe(res => this.processBeerKegsOnTap(res, tap.number));
+  }
+
+  private showWeights(tap: Tap) {
+
+  }
+
+  private removeBeer(tap: Tap) {
+    this.tapService.sendBackToStorage(tap.id).subscribe(res => this.processBeerKegsOnTap(res, tap.number));
+  }
+
+  private setFromDirectQueue(tap: Tap) {
+    this.tapService.setFromDirectQueue(tap.id).subscribe(res => this.processBeerKegsOnTap(res, tap.number));
+  }
+
+  private processBeerKegsOnTap(kegOnTaps: BeerKegOnTap[], tapNumber) {
+    if (kegOnTaps.length > 0) {
+      kegOnTaps.sort(TapsQueueComponent.timeCompare);
+
+      const keg = kegOnTaps[0];
+      if (keg.installTime != null) {
+        this.directQueue[tapNumber] = kegOnTaps.slice(1);
+        this.kegs[tapNumber] = keg;
+      } else {
+        this.directQueue[tapNumber] = kegOnTaps;
+      }
+
+      if (keg && keg.keg && keg.keg.keg && keg.installTime != null) {
+        const bkeg = keg.keg;
+        const bbkeg = keg.keg.keg;
+        const beer = bkeg.beer;
+        this.weights[tapNumber] = bkeg.weights.length <= 0 ?
+          bbkeg.volume :
+          TapsQueueComponent.calculateRemainingVolume(
+            bkeg.weights[bkeg.weights.length - 1].weight,
+            bbkeg.emptyWeight,
+            beer.gravity || 10,
+            beer.alcohol || 5
+          );
+      }
+    } else {
+      this.kegs[tapNumber] = null;
+      this.directQueue[tapNumber] = [];
+    }
+  }
+
+  private hasKegOnTap(tap: Tap) {
+    return tap != null
+      && tap.beerKegsOnTap.filter(bk =>
+        bk.installTime != null && (bk.deinstallTime == null || moment(bk.deinstallTime).isSameOrAfter(moment()))
+      ).length > 0;
+  }
+
+  private hasKegsInQueue(tap: Tap) {
+    return tap != null
+      &&
+      (
+      tap.beerKegsOnTap.filter(bk =>
+        bk.installTime == null
+      ).length > 0
+      ||
+      tap.beerKegsOnTap.filter(bk =>
+        bk.deinstallTime == null || moment(bk.deinstallTime).isSameOrAfter(moment())
+      ).length > 1
+      );
+  }
+
+  private hasKegsOnlyInQueue(tap: Tap) {
+    return tap != null
+      &&
+      (
+        tap.beerKegsOnTap.filter(bk =>
+        bk.installTime != null && (bk.deinstallTime == null || moment(bk.deinstallTime).isSameOrAfter(moment()))
+      ).length === 0
+      )
+      &&
+      (
+        tap.beerKegsOnTap.filter(bk =>
+          bk.installTime == null
+        ).length > 0
+        ||
+        tap.beerKegsOnTap.filter(bk =>
+          bk.deinstallTime == null || moment(bk.deinstallTime).isSameOrAfter(moment())
+        ).length > 0
+      );
+  }
 }

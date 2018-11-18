@@ -19,6 +19,8 @@ import { TapsPrintComponent } from './taps-print/taps-print.component';
 import { SortByTapPipe } from './sort-by-tap.pipe';
 import {MomentModule} from 'ngx-moment';
 import { StorageComponent } from './storage/storage.component';
+import {ContextMenuModule} from 'ngx-contextmenu';
+import {DndModule} from 'ngx-drag-drop';
 
 const itemRoutes: Routes = [
   { path: 'queue', component: TapsQueueComponent},
@@ -53,6 +55,9 @@ const appRoutes: Routes = [
     ReactiveFormsModule,
     RouterModule.forRoot(appRoutes),
     HttpClientModule,
+    ContextMenuModule.forRoot({
+      useBootstrap4: true,
+    }),
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
@@ -61,7 +66,8 @@ const appRoutes: Routes = [
       }
     }),
     NgbModule,
-    MomentModule
+    MomentModule,
+    DndModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -27,4 +27,8 @@ export class QueueService {
     return res;
   }
 
+  public addToQueue(pubid: string, keg: BeerKeg) {
+    const res = this.http .post<BeerKeg>(`${this.url}/pubs/${pubid}/queue`, keg, this.httpOptions);
+    return res;
+  }
 }

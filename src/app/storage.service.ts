@@ -22,4 +22,8 @@ export class StorageService {
     return res;
   }
 
+  public removeFromStorage(pubid: string, keg: BeerKeg) {
+    const res = this.http .delete<BeerKeg>(`${this.url}/pubs/${pubid}/storage/${keg.id}`, this.httpOptions);
+    return res;
+  }
 }
