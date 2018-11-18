@@ -41,7 +41,7 @@ export class StorageComponent implements OnInit {
     });
   }
 
-  private addToQueue(keg: BeerKeg) {
+  public addToQueue(keg: BeerKeg) {
     this.queueService.addToQueue(this.id, keg).subscribe(k => {
       this.kegs.forEach((current, index, kegs) => {if (current.id === k.id) {
         kegs[index].beerKegsOnTap = k.beerKegsOnTap;
@@ -49,7 +49,7 @@ export class StorageComponent implements OnInit {
     });
   }
 
-  private removeFromStorage(keg: BeerKeg) {
+  public removeFromStorage(keg: BeerKeg) {
     this.storageService.removeFromStorage(this.id, keg).subscribe(k => {
       this.kegs.forEach((current, index, kegs) => {if (current.id === k.id) {
         if (k.installationDate != null) {

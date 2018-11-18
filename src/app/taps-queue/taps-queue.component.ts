@@ -127,23 +127,23 @@ export class TapsQueueComponent implements OnInit {
     );
   }
 
-  private addToDirectQueue(keg: BeerKegOnTap, tap: Tap) {
+  public addToDirectQueue(keg: BeerKegOnTap, tap: Tap) {
     this.tapService.addToDirectQueue(tap.id, keg).subscribe(res => this.processBeerKegsOnTap(res, tap.number));
   }
 
-  private showWeights(tap: Tap) {
+  public showWeights(tap: Tap) {
 
   }
 
-  private removeBeer(tap: Tap) {
+  public removeBeer(tap: Tap) {
     this.tapService.sendBackToStorage(tap.id).subscribe(res => this.processBeerKegsOnTap(res, tap.number));
   }
 
-  private setFromDirectQueue(tap: Tap) {
+  public setFromDirectQueue(tap: Tap) {
     this.tapService.setFromDirectQueue(tap.id).subscribe(res => this.processBeerKegsOnTap(res, tap.number));
   }
 
-  private processBeerKegsOnTap(kegOnTaps: BeerKegOnTap[], tapNumber) {
+  public processBeerKegsOnTap(kegOnTaps: BeerKegOnTap[], tapNumber) {
     if (kegOnTaps.length > 0) {
       kegOnTaps.sort(TapsQueueComponent.timeCompare);
 
@@ -174,14 +174,14 @@ export class TapsQueueComponent implements OnInit {
     }
   }
 
-  private hasKegOnTap(tap: Tap) {
+  public hasKegOnTap(tap: Tap) {
     return tap != null
       && tap.beerKegsOnTap.filter(bk =>
         bk.installTime != null && (bk.deinstallTime == null || moment(bk.deinstallTime).isSameOrAfter(moment()))
       ).length > 0;
   }
 
-  private hasKegsInQueue(tap: Tap) {
+  public hasKegsInQueue(tap: Tap) {
     return tap != null
       &&
       (
@@ -195,7 +195,7 @@ export class TapsQueueComponent implements OnInit {
       );
   }
 
-  private hasKegsOnlyInQueue(tap: Tap) {
+  public hasKegsOnlyInQueue(tap: Tap) {
     return tap != null
       &&
       (
