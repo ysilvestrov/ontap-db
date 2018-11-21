@@ -2,73 +2,86 @@
   {{errorMessage}}
 </div>
 <div>Dashboard</div>
-<table class="table">
+<table class="table table-hover">
   <thead>
   <tr>
-    <th>Кран</th>
-    <th>Производитель</th>
-    <th>Сорт</th>
-    <th>ABV</th>
-    <th>OG</th>
-    <th>IBU</th>
-    <th>Поставили</th>
-    <th>Остаток</th>
-    <th>Прямая очередь</th>
-    <th>Общая очередь</th>
+    <th scope="col">Кран</th>
+    <th scope="col">Производитель</th>
+    <th scope="col">Сорт</th>
+    <th scope="col">ABV</th>
+    <th scope="col">OG</th>
+    <th scope="col">IBU</th>
+    <th scope="col">Поставили</th>
+    <th scope="col">Остаток</th>
+    <th scope="col">Прямая очередь</th>
+    <th scope="col">Общая очередь</th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let tap of taps" [contextMenu]="tapMenu" [contextMenuSubject]="tap">
-    <td>{{tap.number}}</td>
-    <td>
-      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.brewery.name}}</ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.name}}</ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.alcohol}}</ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.gravity}}</ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.ibu}}</ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="kegs[tap.number]">
-        <time *ngIf="kegs[tap.number].installTime">{{kegs[tap.number].installTime | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
-      </ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="weights[tap.number]">{{weights[tap.number] | number:'1.1-1'}}</ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="directQueue[tap.number]">
+  <ng-container *ngFor="let tap of taps">
+    <tr class="table-info" *ngIf="weighting && tap && weighting.id === tap.id">
+      <td colspan="10">
+        <div>
+          <app-weight-editor [weight]="weights[tap.number] | number:'1.1-1'"
+                             (weighted)="onWeighted($event, tap.number)"
+                             (canceled)="onWeightingCancelled($event, tap.number)"></app-weight-editor>
+        </div>
+      </td>
+    </tr>
+    <tr [contextMenu]="tapMenu" [contextMenuSubject]="tap">
+      <td>{{tap.number}}</td>
+      <td>
+        <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.brewery.name}}</ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.name}}</ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.alcohol}}</ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.gravity}}</ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.ibu}}</ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="kegs[tap.number]">
+          <time *ngIf="kegs[tap.number].installTime">{{kegs[tap.number].installTime | amFromUtc | amDateFormat:
+            'YYYY-MM-DD'}}
+          </time>
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="weights[tap.number]">{{weights[tap.number] | number:'1.1-1'}}</ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="directQueue[tap.number]">
         <span *ngFor="let keg of directQueue[tap.number]">
           {{keg.keg.beer.brewery.name}}-{{keg.keg.beer.name}}
         </span>
-      </ng-container>
-      <section dndDropzone (dndDrop)="addToDirectQueue($event.data, tap)">&nbsp;
-        <!--optional placeholder element for dropzone-->
-        <!--will be removed from DOM on init-->
-        <div style="border: 1px orangered solid; border-radius: 5px; padding: 15px;"
-             dndPlaceholderRef>
-          &nbsp;
-        </div>
+        </ng-container>
+        <section dndDropzone (dndDrop)="addToDirectQueue($event.data, tap)">&nbsp;
+          <!--optional placeholder element for dropzone-->
+          <!--will be removed from DOM on init-->
+          <div style="border: 1px orangered solid; border-radius: 5px; padding: 15px;"
+               dndPlaceholderRef>
+            &nbsp;
+          </div>
 
-      </section>
-    </td>
-    <td>
-      <ng-container *ngIf="queue && queue[tap.number]">
-        <div [dndDraggable]="queue[tap.number]"
-             [dndEffectAllowed]="'all'"
-             [dndDisableIf]="false">
-          {{queue[tap.number].keg.beer.brewery.name}}-{{queue[tap.number].keg.beer.name}}
-        </div>
-      </ng-container>
-    </td>
-  </tr>
+        </section>
+      </td>
+      <td>
+        <ng-container *ngIf="queue && queue[tap.number]">
+          <div [dndDraggable]="queue[tap.number]"
+               [dndEffectAllowed]="'all'"
+               [dndDisableIf]="false">
+            {{queue[tap.number].keg.beer.brewery.name}}-{{queue[tap.number].keg.beer.name}}
+          </div>
+        </ng-container>
+      </td>
+    </tr>
+  </ng-container>
   </tbody>
 </table>
 

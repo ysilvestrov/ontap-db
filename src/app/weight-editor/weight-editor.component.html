@@ -1,0 +1,11 @@
+<form class="form-inline" [formGroup]="weightForm" (ngSubmit)="onSubmit()">
+  <div class="form-group mx-sm-3 mb-2">
+    <label for="weight" class="sr-only">Вес</label>
+    <input type="number" class="form-control-number" id="weight" formControlName="weight"/>
+  </div>
+  <button type="submit" class="btn btn-primary mb-2">Добавить взвешивание</button>
+  <button type="button" class="close" aria-label="Close" (click)="onCanceled()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</form>
+

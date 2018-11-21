@@ -29,4 +29,9 @@ export class TapService {
     const res = this.http .post<BeerKegOnTap[]>(`${this.url}/taps/${tapId}/beer`, this.httpOptions);
     return res;
   }
+
+  weightKeg(kegId: number, weight: number) {
+    const res = this.http .put<BeerKeg>(`${this.url}/beerkegs/${kegId}/weight`, {Weight: weight},  this.httpOptions);
+    return res;
+  }
 }

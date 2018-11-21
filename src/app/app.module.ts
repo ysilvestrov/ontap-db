@@ -21,6 +21,7 @@ import {MomentModule} from 'ngx-moment';
 import { StorageComponent } from './storage/storage.component';
 import {ContextMenuModule} from 'ngx-contextmenu';
 import {DndModule} from 'ngx-drag-drop';
+import { WeightEditorComponent } from './weight-editor/weight-editor.component';
 
 const itemRoutes: Routes = [
   { path: 'queue', component: TapsQueueComponent},
@@ -48,7 +49,8 @@ const appRoutes: Routes = [
     TapsQueueComponent,
     TapsPrintComponent,
     SortByTapPipe,
-    StorageComponent
+    StorageComponent,
+    WeightEditorComponent
   ],
   imports: [
     BrowserModule,

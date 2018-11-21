@@ -3,11 +3,13 @@ import {QueueService} from '../queue.service';
 import {Subscription} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute} from '@angular/router';
-import {BeerKegOnTap, ITap, Tap} from '../ontap.models';
+import {BeerKeg, BeerKegOnTap, ITap, Tap} from '../ontap.models';
 import * as moment from 'moment';
 import {ContextMenuComponent} from 'ngx-contextmenu';
 import { DndDropEvent } from 'ngx-drag-drop';
 import {TapService} from '../tap.service';
+import {FormsModule} from '@angular/forms';
+import {BeerCalculatorService} from '../beer-calculator.service';
 
 @Component({
   selector: 'app-taps-queue',
@@ -18,6 +20,7 @@ export class TapsQueueComponent implements OnInit {
   constructor(
     private queueService: QueueService,
     private tapService: TapService,
+    private calculator: BeerCalculatorService,
     private http: HttpClient,
     private route: ActivatedRoute,
   ) {
@@ -39,10 +42,7 @@ export class TapsQueueComponent implements OnInit {
   public queue: BeerKegOnTap[];
   public directQueue: BeerKegOnTap[][];
   public weights: number[];
-
-  private static calculateRemainingVolume(weight, emptyWeight, gravity, alcohol) {
-    return (weight - emptyWeight) / (gravity * 0.04 - 0.0000753 * alcohol);
-  }
+  public weighting: Tap;
 
   private static isNumber(value: string | number): boolean {
     return !isNaN(Number(value.toString()));
@@ -90,6 +90,10 @@ export class TapsQueueComponent implements OnInit {
     // this.getTaps();
   }
 
+  private calculateRemainingVolume(weight, emptyWeight, gravity, alcohol) {
+    return (weight - emptyWeight) * this.calculator.getGravity(gravity, alcohol);
+  }
+
   private getTaps() {
     this.queueService.getTaps(this.id).subscribe(
       taps => {
@@ -132,7 +136,19 @@ export class TapsQueueComponent implements OnInit {
   }
 
   public showWeights(tap: Tap) {
+    this.weighting = tap;
+  }
 
+  public onWeighted(weight) {
+    this.tapService.weightKeg(this.kegs[this.weighting.number].keg.id, weight).subscribe(res => {
+      this.processKegWeight(res, this.weighting.number);
+      this.weighting = null;
+    }
+    );
+  }
+
+  public onWeightingCancelled() {
+      this.weighting = null;
   }
 
   public removeBeer(tap: Tap) {
@@ -156,22 +172,31 @@ export class TapsQueueComponent implements OnInit {
       }
 
       if (keg && keg.keg && keg.keg.keg && keg.installTime != null) {
-        const bkeg = keg.keg;
-        const bbkeg = keg.keg.keg;
-        const beer = bkeg.beer;
-        this.weights[tapNumber] = bkeg.weights.length <= 0 ?
-          bbkeg.volume :
-          TapsQueueComponent.calculateRemainingVolume(
-            bkeg.weights[bkeg.weights.length - 1].weight,
-            bbkeg.emptyWeight,
-            beer.gravity || 10,
-            beer.alcohol || 5
-          );
+        this.processKegWeight(keg.keg, tapNumber);
       }
     } else {
       this.kegs[tapNumber] = null;
       this.directQueue[tapNumber] = [];
+      this.weights[tapNumber] = null;
     }
+  }
+
+  private processKegWeight(bkeg: BeerKeg, tapNumber) {
+    const bbkeg = bkeg.keg;
+    const beer = bkeg.beer;
+    let weight = null;
+    if (bkeg.weights.length > 0) {
+      const weightRecord = bkeg.weights.reduce((w1, w2) => w1.date > w2.date ? w1 : w2);
+      weight = weightRecord.weight;
+    }
+    this.weights[tapNumber] = weight === null ?
+      bbkeg.volume :
+      this.calculateRemainingVolume(
+        weight,
+        bbkeg.emptyWeight,
+        beer.gravity || 10,
+        beer.alcohol || 5
+      );
   }
 
   public hasKegOnTap(tap: Tap) {
