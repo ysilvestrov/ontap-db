@@ -26,4 +26,9 @@ export class StorageService {
     const res = this.http .delete<BeerKeg>(`${this.url}/pubs/${pubid}/storage/${keg.id}`, this.httpOptions);
     return res;
   }
+
+  public addKeg(pubid: string, keg: BeerKeg) {
+    const res = this.http .post<BeerKeg>(`${this.url}/pubs/${pubid}/storage/`, keg, this.httpOptions);
+    return res;
+  }
 }

@@ -2,6 +2,15 @@
   {{errorMessage}}
 </div>
 <div>Склад</div>
+<div *ngIf="addingMode===false; else addKegContainer">
+  <button class="btn btn-outline-primary" (click)="showAddingKeg()"><i class="far fa-plus-square"></i></button>
+</div>
+<ng-template #addKegContainer>
+  <div class="bg-info">
+    <app-beer-keg-editor [beers]="beers" [beerKeg]="currentBeerKeg"
+                         (added)="addKeg($event)" (canceled)="cancelAddingKeg()" ></app-beer-keg-editor>
+  </div>
+</ng-template>
 <table class="table">
   <thead>
   <tr>

@@ -11,7 +11,7 @@ import {AuthGuard} from './auth.guard';
 import {root} from 'rxjs/internal-compatibility';
 import {tokenGetter} from './auth.service';
 import {HttpClientModule} from '@angular/common/http';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDateAdapter, NgbDateNativeAdapter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { DashboardTopbarComponent } from './dashboard-topbar/dashboard-topbar.component';
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
 import { TapsQueueComponent } from './taps-queue/taps-queue.component';
@@ -22,6 +22,7 @@ import { StorageComponent } from './storage/storage.component';
 import {ContextMenuModule} from 'ngx-contextmenu';
 import {DndModule} from 'ngx-drag-drop';
 import { WeightEditorComponent } from './weight-editor/weight-editor.component';
+import { BeerKegEditorComponent } from './beer-keg-editor/beer-keg-editor.component';
 
 const itemRoutes: Routes = [
   { path: 'queue', component: TapsQueueComponent},
@@ -50,7 +51,8 @@ const appRoutes: Routes = [
     TapsPrintComponent,
     SortByTapPipe,
     StorageComponent,
-    WeightEditorComponent
+    WeightEditorComponent,
+    BeerKegEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -71,7 +73,7 @@ const appRoutes: Routes = [
     MomentModule,
     DndModule
   ],
-  providers: [],
+  providers: [{provide: NgbDateAdapter, useClass: NgbDateNativeAdapter}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

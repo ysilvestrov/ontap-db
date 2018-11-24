@@ -2,10 +2,12 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
-import {BeerKeg} from '../ontap.models';
+import {Beer, BeerKeg, Keg} from '../ontap.models';
 import {StorageService} from '../storage.service';
 import {ContextMenuComponent} from 'ngx-contextmenu';
 import {QueueService} from '../queue.service';
+import {BeerService} from '../beer.service';
+import {forEach} from '@angular/router/src/utils/collection';
 
 @Component({
   selector: 'app-storage',
@@ -17,6 +19,7 @@ export class StorageComponent implements OnInit {
   constructor(
     private storageService: StorageService,
     private queueService: QueueService,
+    private beerService: BeerService,
     private http: HttpClient,
     private route: ActivatedRoute,
   ) {
@@ -26,6 +29,7 @@ export class StorageComponent implements OnInit {
         this.getKegs();
       }
     );
+    this.getBeers();
   }
 
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
@@ -33,11 +37,20 @@ export class StorageComponent implements OnInit {
   private routeSubscription: Subscription;
   private id: string;
   public kegs: BeerKeg[];
+  public beers: Beer[];
   public errorMessage: any;
+  public addingMode = false;
+  public currentBeerKeg: BeerKeg;
 
   private getKegs() {
     this.storageService.getKegs(this.id).subscribe(kegs => {
       this.kegs = kegs;
+    });
+  }
+
+  private getBeers() {
+    this.beerService.getBeers().subscribe(beers => {
+      this.beers = beers;
     });
   }
 
@@ -62,4 +75,24 @@ export class StorageComponent implements OnInit {
   ngOnInit() {
   }
 
+  showAddingKeg() {
+    this.addingMode = true;
+    this.currentBeerKeg = new BeerKeg({keg: new Keg(), beer: new Beer()});
+  }
+
+  public cancelAddingKeg() {
+    this.addingMode = false;
+    this.currentBeerKeg = null;
+  }
+
+  addKeg(keg) {
+    console.log(JSON.stringify(keg));
+    this.storageService.addKeg(this.id, keg).subscribe(k => {
+      const _kegs = [];
+      this.kegs.forEach(_ => _kegs.push(_));
+      _kegs.push(keg);
+      this.kegs = _kegs;
+    });
+    this.addingMode = false;
+  }
 }
