@@ -1,16 +1,24 @@
-<div class="alert alert-danger" role="alert" *ngIf="errorMessage" style="width:500px;">
-  {{errorMessage}}
+<ngb-alert [type]="'danger'" (close)="clearError()" *ngIf="errorMessage">
+  {{ errorMessage }}
+</ngb-alert>
+<div class="row">
+  <div class="col-sm-11">
+    Склад
+  </div>
+  <div>
+    <div *ngIf="!addingMode">
+      <button class="btn btn-outline-primary" (click)="showAddingKeg()" *ngIf="beers && breweries">
+        <i class="far fa-plus-square"></i>
+      </button>
+    </div>
+  </div>
 </div>
-<div>Склад</div>
-<div *ngIf="addingMode===false; else addKegContainer">
-  <button class="btn btn-outline-primary" (click)="showAddingKeg()"><i class="far fa-plus-square"></i></button>
-</div>
-<ng-template #addKegContainer>
+<ng-container *ngIf="addingMode">
   <div class="jumbotron jumbotron-fluid">
     <app-beer-keg-editor [beers]="beers" [breweries]="breweries" [beerKeg]="currentBeerKeg"
                          (added)="addKeg($event)" (canceled)="cancelAddingKeg()" ></app-beer-keg-editor>
   </div>
-</ng-template>
+</ng-container>
 <table class="table">
   <thead>
   <tr>

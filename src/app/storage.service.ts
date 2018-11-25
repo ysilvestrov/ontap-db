@@ -28,7 +28,7 @@ export class StorageService {
   }
 
   public addKeg(pubid: string, keg: BeerKeg) {
-    const res = this.http .post<BeerKeg>(`${this.url}/pubs/${pubid}/storage/`, keg, this.httpOptions);
+    const res = this.http .post<BeerKeg>(`${this.url}/pubs/c${pubid}/storage/`, keg, this.httpOptions);
     return res;
   }
 }

@@ -106,5 +106,7 @@ export class StorageComponent implements OnInit {
     this.addingMode = false;
   }
 
-  processError = err => this.errorMessage = err.error.toString()
+  processError = err => this.errorMessage = err.error.error ?  err.error.error.message : err.error.toString();
+
+  clearError = () => this.errorMessage = null;
 }
