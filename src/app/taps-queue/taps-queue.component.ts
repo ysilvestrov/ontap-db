@@ -189,13 +189,16 @@ export class TapsQueueComponent implements OnInit {
       const weightRecord = bkeg.weights.reduce((w1, w2) => w1.date > w2.date ? w1 : w2);
       weight = weightRecord.weight;
     }
+
+    const alcohol = beer.alcohol || 5;
+    const gravity = beer.gravity || (alcohol * 2.2);
     this.weights[tapNumber] = weight === null ?
       bbkeg.volume :
       this.calculateRemainingVolume(
         weight,
         bbkeg.emptyWeight,
-        beer.gravity || 10,
-        beer.alcohol || 5
+        gravity,
+        alcohol
       );
   }
 

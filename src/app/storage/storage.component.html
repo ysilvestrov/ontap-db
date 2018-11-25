@@ -6,8 +6,8 @@
   <button class="btn btn-outline-primary" (click)="showAddingKeg()"><i class="far fa-plus-square"></i></button>
 </div>
 <ng-template #addKegContainer>
-  <div class="bg-info">
-    <app-beer-keg-editor [beers]="beers" [beerKeg]="currentBeerKeg"
+  <div class="jumbotron jumbotron-fluid">
+    <app-beer-keg-editor [beers]="beers" [breweries]="breweries" [beerKeg]="currentBeerKeg"
                          (added)="addKeg($event)" (canceled)="cancelAddingKeg()" ></app-beer-keg-editor>
   </div>
 </ng-template>

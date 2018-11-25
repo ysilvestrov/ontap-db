@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {Beer, BeerKeg, BeerKegWeight, Keg} from '../ontap.models';
+import {Beer, BeerKeg, BeerKegWeight, Brewery, Keg} from '../ontap.models';
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 
@@ -19,6 +19,15 @@ export class BeerKegEditorComponent implements OnInit {
     this._beers = value;
   }
 
+  get breweries(): Brewery[] {
+    return this._breweries;
+  }
+
+  @Input()
+  set breweries(value: Brewery[]) {
+    this._breweries = value;
+  }
+
   get beerKeg(): BeerKeg {
     return this._beerKeg;
   }
@@ -28,7 +37,7 @@ export class BeerKegEditorComponent implements OnInit {
     this._beerKeg = value;
     if (value) {
       if (value.beer) {
-        this.beerName = this.formatter(value.beer);
+        this.beerName = this.formatterBeer(value.beer);
       }
       if (value.weights && value.weights.length > 0 ) {
         this.beerKegForm.controls['currentWeight'].setValue(value.weights.reduce(
@@ -48,11 +57,21 @@ export class BeerKegEditorComponent implements OnInit {
     beerName: new FormControl(''),
     bestBeforeDate: new FormControl(''),
     packageDate: new FormControl(''),
+    newBeerBrewery: new FormControl(''),
+    newBeerName: new FormControl(''),
+    newBeerDescription: new FormControl(''),
+    newBeerAbv: new FormControl(''),
+    newBeerIbu: new FormControl(''),
+    newBeerOg: new FormControl(''),
   });
 
   public _beerKeg: BeerKeg;
   public beerName: string;
+  public breweryName: string;
+  public addingBeerMode = false;
+  public addingBeer: Beer;
   private _beers: Beer[];
+  private _breweries: Brewery[];
   @Output() added = new EventEmitter<BeerKeg>();
   @Output() canceled = new EventEmitter<null>();
 
@@ -76,21 +95,56 @@ export class BeerKegEditorComponent implements OnInit {
   }
 
   onBeerChange($event: any) {
-    this._beerKeg.beer = this._beers.filter(b => this.formatter(b) === this.beerName)[0];
+    this._beerKeg.beer = this._beers.filter(b => this.formatterBeer(b) === this.beerName)[0];
   }
 
-  search = (text$: Observable<string>) => {
-    const beers = this._beers;
+  onBreweryChange($event: any) {
+    this.addingBeer.brewery = this._breweries.filter(b => this.formatterBrewery(b) === this.breweryName)[0];
+  }
+
+  startAddingBeer() {
+    this.addingBeerMode = true;
+    this.addingBeer = new Beer();
+  }
+
+  cancelAddingBeer() {
+    this.addingBeerMode = false;
+  }
+
+  addBeer() {
+    this.beers.push(this.addingBeer);
+    this.beerName = this.formatterBeer(this.addingBeer);
+    this._beerKeg.beer = this.addingBeer;
+    this.addingBeerMode = false;
+  }
+
+  searchBeer = (text$: Observable<string>) => {
+    const _this_ = this;
     return text$.pipe(
       debounceTime(200),
       distinctUntilChanged(),
       map(term => term === '' ? []
-        : beers.map(b => `${b.brewery.name} - ${b.name}`)
+        : _this_.beers.map(b => `${b.brewery.name} - ${b.name}`)
           .filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
     );
   }
 
-  formatter = (b: any) => {
+  formatterBeer = (b: Beer) => {
     return b && b.brewery ? `${b.brewery.name} - ${b.name}` : '';
+  }
+
+  searchBrewery = (text$: Observable<string>) => {
+    const breweries = this._breweries;
+    return text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      map(term => term === '' ? []
+        : breweries.map(b => `${b.name}`)
+          .filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
+    );
+  }
+
+  formatterBrewery = (b: Brewery) => {
+    return b ? `${b.name}` : '';
   }
 }

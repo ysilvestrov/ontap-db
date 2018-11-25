@@ -3,44 +3,144 @@
 </ng-template>
 
 <form class="form" [formGroup]="beerKegForm" (ngSubmit)="onSubmit()">
-  <div class="form-group mx-sm-3 mb-2">
-    <label for="typeahead-format">Пиво:</label>
-    <input id="typeahead-format" type="text" class="form-control" [(ngModel)]="beerName"
-           formControlName="beerName" (change)="onBeerChange($event)" [resultTemplate]="rt"
-           [ngbTypeahead]="search" [resultFormatter]="formatter" />
-  </div>
-  <div class="form-group mx-sm-3 mb-2">
-    <label for="empty-weight">Пустой вес </label>
-    <input type="number" class="form-control-number" id="empty-weight" [(ngModel)]="beerKeg.keg.emptyWeight" formControlName="emptyWeight"/>
-  </div>
-  <div class="form-group mx-sm-3 mb-2">
-    <label for="current-weight">Текущий вес </label>
-    <input type="number" class="form-control-number" id="current-weight" formControlName="currentWeight"/>
-  </div>
-  <div class="form-group mx-sm-3 mb-2">
-    <label for="current-weight">Объём кега </label>
-    <input type="number" class="form-control-number" [(ngModel)]="beerKeg.keg.volume"  id="keg-volume"
-           formControlName="kegVolume"/>
-  </div>
-  <div class="form-group mx-sm-3 mb-2">
-    <div class="input-group">
-      <label for="best-before-date">Выпить до </label>&nbsp;
-      <input class="form-control" placeholder="yyyy-mm-dd" id="best-before-date"
-             name="best-before-date" [(ngModel)]="_beerKeg.bestBeforeDate" ngbDatepicker
-             formControlName="bestBeforeDate" #dbbd="ngbDatepicker">
-      <div class="input-group-append">
-        <button class="btn btn-outline-secondary" (click)="dbbd.toggle()" type="button"><i class="far fa-calendar"></i></button>
+  <div class="form-group mx-sm-3 mb-2 mt-2 row">
+    <label for="typeahead-beer" class="col-sm-2 col-form-label">Пиво </label>
+    <div class="col-sm-10">
+      <div class="input-group">
+        <input id="typeahead-beer" type="text" class="form-control" [(ngModel)]="beerName"
+               formControlName="beerName" (change)="onBeerChange($event)" [readonly]="addingBeerMode"
+               [resultTemplate]="rt" [ngbTypeahead]="searchBeer" [resultFormatter]="formatterBeer"
+               placeholder="..."/>
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" (click)="startAddingBeer()" type="button"><i class="fas fa-plus"></i></button>
+        </div>
       </div>
     </div>
   </div>
-  <div class="form-group mx-sm-3 mb-2">
-    <div class="input-group">
-      <label for="package-date">Упаковано </label>&nbsp;
-      <input class="form-control" placeholder="yyyy-mm-dd" id="package-date"
-             name="package-date" [(ngModel)]="_beerKeg.packageDate" ngbDatepicker
-             formControlName="packageDate" #dpd="ngbDatepicker">
-      <div class="input-group-append">
-        <button class="btn btn-outline-secondary" (click)="dpd.toggle()" type="button"><i class="far fa-calendar"></i></button>
+  <div class="border-left border-primary pl-1 ml-3" *ngIf="addingBeerMode">
+    <div class="form-group mx-sm-3 mb-2 row">
+      <label for="typeahead-beer" class="col-sm-2 col-form-label">Пивоварня </label>
+      <div class="col-sm-10">
+        <div class="input-group">
+          <input id="typeahead-brewery" type="text" class="form-control" [(ngModel)]="breweryName"
+                 formControlName="newBeerBrewery" (change)="onBreweryChange($event)"
+                 [resultTemplate]="rt" [ngbTypeahead]="searchBrewery" [resultFormatter]="formatterBrewery"
+                placeholder="..."/>
+        </div>
+      </div>
+    </div>
+    <div class="form-group mx-sm-3 mb-2 row">
+      <label for="beer-name" class="col-sm-2 col-form-label">Название </label>
+      <div class="col-sm-10">
+        <input class="form-control w-100" id="beer-name" [(ngModel)]="addingBeer.name" formControlName="newBeerName"/>
+      </div>
+    </div>
+    <div class="form-group mx-sm-3 mb-2 row">
+      <label for="abv" class="col-sm-2 col-form-label">ABV </label>
+      <div class="col-sm-10">
+        <div class="input-group">
+          <input type="number" class="form-control-number" id="abv" [(ngModel)]="addingBeer.alcohol"
+                 formControlName="newBeerDescription" placeholder="0"/>
+          <div class="input-group-append">
+            <div class="input-group-text">%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group mx-sm-3 mb-2 row">
+      <label for="og" class="col-sm-2 col-form-label">OG </label>
+      <div class="col-sm-10">
+        <div class="input-group">
+          <input type="number" class="form-control-number" id="og" [(ngModel)]="addingBeer.gravity" formControlName="newBeerOg"/>
+          <div class="input-group-append">
+            <div class="input-group-text">%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group mx-sm-3 mb-2 row">
+      <label for="ibu" class="col-sm-2 col-form-label">IBU </label>
+      <div class="col-sm-10">
+        <div class="input-group">
+          <input type="number" class="form-control-number" id="ibu" [(ngModel)]="addingBeer.ibu" formControlName="newBeerIbu"/>
+        </div>
+      </div>
+    </div>
+    <div class="form-group mx-sm-3 mb-2 row">
+      <label for="description" class="col-sm-2 col-form-label">Описание </label>
+      <div class="col-sm-10">
+        <div class="input-group">
+          <textarea class="form-control w-100" id="description" [(ngModel)]="addingBeer.description" formControlName="newBeerDescription">
+          </textarea>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <button (click)="addBeer()" class="btn btn-primary">ОК</button>
+      </div>
+      <div class="col-sm-6">
+        <button (click)="cancelAddingBeer()" class="btn btn-secondary">Не добавлять</button>
+      </div>
+    </div>
+  </div>
+  <div class="form-group mx-sm-3 mb-2 row">
+    <label for="empty-weight" class="col-sm-2 col-form-label">Пустой вес </label>
+    <div class="col-sm-10">
+      <div class="input-group">
+        <input type="number" class="form-control-number" id="empty-weight" [(ngModel)]="beerKeg.keg.emptyWeight" formControlName="emptyWeight"/>
+        <div class="input-group-append">
+          <div class="input-group-text">кг</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group mx-sm-3 mb-2 row">
+    <label for="current-weight" class="col-sm-2 col-form-label">Текущий вес </label>
+    <div class="col-sm-10">
+      <div class="input-group">
+        <input type="number" class="form-control-number" id="current-weight" formControlName="currentWeight"/>
+        <div class="input-group-append">
+          <div class="input-group-text">кг</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group mx-sm-3 mb-2 row">
+    <label for="keg-volume" class="col-sm-2 col-form-label">Объём кега </label>
+    <div class="col-sm-10">
+      <div class="input-group">
+        <input type="number" class="form-control-number" [(ngModel)]="beerKeg.keg.volume"  id="keg-volume"
+               formControlName="kegVolume"/>
+        <div class="input-group-append">
+            <div class="input-group-text">л</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group mx-sm-3 mb-2 row">
+    <label for="best-before-date" class="col-sm-2 col-form-label">Выпить до </label>
+    <div class="col-sm-10">
+      <div class="input-group">
+        <input class="form-control" placeholder="yyyy-mm-dd" id="best-before-date"
+               name="best-before-date" [(ngModel)]="_beerKeg.bestBeforeDate" ngbDatepicker
+               formControlName="bestBeforeDate" #dbbd="ngbDatepicker">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" (click)="dbbd.toggle()" type="button"><i class="far fa-calendar"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group mx-sm-3 mb-2 row">
+    <label for="package-date" class="col-sm-2 col-form-label">Упаковано </label>
+    <div class="col-sm-10">
+      <div class="input-group">
+        <input class="form-control" placeholder="yyyy-mm-dd" id="package-date"
+               name="package-date" [(ngModel)]="_beerKeg.packageDate" ngbDatepicker
+               formControlName="packageDate" #dpd="ngbDatepicker">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" (click)="dpd.toggle()" type="button"><i class="far fa-calendar"></i></button>
+        </div>
       </div>
     </div>
   </div>
