@@ -109,4 +109,10 @@ export class StorageComponent implements OnInit {
   processError = err => this.errorMessage = err.error.error ?  err.error.error.message : err.error.toString();
 
   clearError = () => this.errorMessage = null;
+
+  refresh() {
+    this.getKegs();
+    this.getBeers();
+    this.getBreweries();
+  }
 }

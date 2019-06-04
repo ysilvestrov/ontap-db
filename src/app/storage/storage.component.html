@@ -2,15 +2,16 @@
   {{ errorMessage }}
 </ngb-alert>
 <div class="row">
-  <div class="col-sm-11">
+  <div class="col-sm-10">
     Склад
   </div>
-  <div>
-    <div *ngIf="!addingMode">
-      <button class="btn btn-outline-primary" (click)="showAddingKeg()" *ngIf="beers && breweries">
-        <i class="far fa-plus-square"></i>
-      </button>
-    </div>
+  <div class="col-sm-2">
+    <button class="btn btn-outline-primary" (click)="showAddingKeg()" *ngIf="beers && breweries && !addingMode">
+      <i class="far fa-plus-square"></i>
+    </button>
+    <button class="btn btn-outline-secondary" (click)="refresh()" *ngIf="kegs && beers && breweries">
+      <i class="fas fa-sync"></i>
+    </button>
   </div>
 </div>
 <ng-container *ngIf="addingMode">

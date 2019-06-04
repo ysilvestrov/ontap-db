@@ -34,4 +34,9 @@ export class TapService {
     const res = this.http .put<BeerKeg>(`${this.url}/beerkegs/${kegId}/weight`, {Weight: weight},  this.httpOptions);
     return res;
   }
+
+  removeFromDirectQueue(tapId: number, keg: BeerKegOnTap) {
+    const res = this.http .delete<BeerKegOnTap[]>(`${this.url}/taps/${tapId}/beer/${keg.id}`, this.httpOptions);
+    return res;
+  }
 }

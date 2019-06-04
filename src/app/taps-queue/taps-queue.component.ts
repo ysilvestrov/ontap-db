@@ -132,7 +132,10 @@ export class TapsQueueComponent implements OnInit {
   }
 
   public addToDirectQueue(keg: BeerKegOnTap, tap: Tap) {
-    this.tapService.addToDirectQueue(tap.id, keg).subscribe(res => this.processBeerKegsOnTap(res, tap.number));
+    this.tapService.addToDirectQueue(tap.id, keg).subscribe(res =>  {
+      this.processBeerKegsOnTap(res, tap.number);
+      this.softRefresh();
+    });
   }
 
   public showWeights(tap: Tap) {
@@ -142,6 +145,7 @@ export class TapsQueueComponent implements OnInit {
   public onWeighted(weight) {
     this.tapService.weightKeg(this.kegs[this.weighting.number].keg.id, weight).subscribe(res => {
       this.processKegWeight(res, this.weighting.number);
+      this.softRefresh();
       this.weighting = null;
     }
     );
@@ -152,11 +156,25 @@ export class TapsQueueComponent implements OnInit {
   }
 
   public removeBeer(tap: Tap) {
-    this.tapService.sendBackToStorage(tap.id).subscribe(res => this.processBeerKegsOnTap(res, tap.number));
+    this.tapService.sendBackToStorage(tap.id).subscribe(res =>  {
+      this.processBeerKegsOnTap(res, tap.number);
+      this.softRefresh();
+    });
   }
 
   public setFromDirectQueue(tap: Tap) {
-    this.tapService.setFromDirectQueue(tap.id).subscribe(res => this.processBeerKegsOnTap(res, tap.number));
+    this.tapService.setFromDirectQueue(tap.id).subscribe(res => {
+      this.processBeerKegsOnTap(res, tap.number);
+      this.softRefresh();
+    });
+  }
+
+  public removeFromDirectQueue(tap: Tap) {
+    const keg = this.directQueue[tap.number][0];
+    this.tapService.removeFromDirectQueue(tap.id, keg).subscribe(res => {
+      this.processBeerKegsOnTap(res, tap.number);
+      this.softRefresh();
+    });
   }
 
   public processBeerKegsOnTap(kegOnTaps: BeerKegOnTap[], tapNumber) {
@@ -242,4 +260,38 @@ export class TapsQueueComponent implements OnInit {
         ).length > 0
       );
   }
+
+  public refresh() {
+    this.getTaps();
+  }
+
+  public softRefresh() {
+    const _taps: Tap[] = [];
+    this.taps.forEach(t => _taps.push(t));
+    this.taps = _taps;
+  }
+
+  public getBeerNameOnTap(tapNumber) {
+    if (this.kegs[tapNumber]) {
+      const keg = this.kegs[tapNumber].keg;
+      if (keg && keg.beer && keg.beer.brewery) {
+        return `"${keg.beer.brewery.name} - ${keg.beer.name}"`;
+      }
+    }
+    return '';
+  }
+
+  public getBeerNameOnDirectQueueOnTap(tapNumber) {
+    if (this.directQueue[tapNumber]) {
+      const bkeg = this.directQueue[tapNumber][0];
+      if (bkeg) {
+        const keg = bkeg.keg;
+        if (keg && keg.beer && keg.beer.brewery) {
+          return `"${keg.beer.brewery.name} - ${keg.beer.name}"`;
+        }
+      }
+    }
+    return '';
+  }
+
 }

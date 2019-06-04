@@ -3,6 +3,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {Beer, BeerKeg, BeerKegWeight, Brewery, Keg} from '../ontap.models';
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
+import {NgbTypeaheadSelectItemEvent} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-beer-keg-editor',
@@ -98,8 +99,16 @@ export class BeerKegEditorComponent implements OnInit {
     this._beerKeg.beer = this._beers.filter(b => this.formatterBeer(b) === this.beerName)[0];
   }
 
+  selectBeer($event: NgbTypeaheadSelectItemEvent) {
+    this._beerKeg.beer = this._beers.filter(b => this.formatterBeer(b) === $event.item)[0];
+  }
+
   onBreweryChange($event: any) {
     this.addingBeer.brewery = this._breweries.filter(b => this.formatterBrewery(b) === this.breweryName)[0];
+  }
+
+  selectBrewery($event: NgbTypeaheadSelectItemEvent) {
+    this.addingBeer.brewery = this._breweries.filter(b => this.formatterBrewery(b) === $event.item)[0];
   }
 
   startAddingBeer() {
