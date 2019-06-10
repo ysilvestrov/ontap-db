@@ -24,6 +24,7 @@
     <th scope="col">Остаток</th>
     <th scope="col">Прямая очередь</th>
     <th scope="col">Общая очередь</th>
+    <th scope="col">&nbsp;</th>
   </tr>
   </thead>
   <tbody>
@@ -32,8 +33,8 @@
       <td colspan="10">
         <div>
           <app-weight-editor [weight]="weights[tap.number] | number:'1.1-1'"
-                             (weighted)="onWeighted($event, tap.number)"
-                             (canceled)="onWeightingCancelled($event, tap.number)"></app-weight-editor>
+                             (weighted)="onWeighted($weight)"
+                             (canceled)="onWeightingCancelled()"></app-weight-editor>
         </div>
       </td>
     </tr>
@@ -73,22 +74,32 @@
         <section dndDropzone (dndDrop)="addToDirectQueue($event.data, tap)">&nbsp;
           <!--optional placeholder element for dropzone-->
           <!--will be removed from DOM on init-->
-          <div style="border: 1px orangered solid; border-radius: 5px; padding: 15px;"
-               dndPlaceholderRef>
-            &nbsp;
+          <div class="drop-dest" dndPlaceholderRef>&nbsp;
           </div>
-
         </section>
       </td>
       <td>
         <ng-container *ngIf="queue && queue[tap.number]">
           <div [dndDraggable]="queue[tap.number]"
                [dndEffectAllowed]="'all'"
-               [dndDisableIf]="false">
-            {{queue[tap.number].keg.beer.brewery.name}}-{{queue[tap.number].keg.beer.name}}
+               [dndDisableIf]="false" class="card">
+						<span>
+							<i class="fas fa-arrows-alt"></i>&nbsp;&nbsp;{{queue[tap.number].keg.beer.brewery.name}}&nbsp;-&nbsp;{{queue[tap.number].keg.beer.name}}
+						</span>
           </div>
         </ng-container>
+				<section dndDropzone (dndDrop)="reorderQueue($event.data, tap)">&nbsp;
+					<!--optional placeholder element for dropzone-->
+					<!--will be removed from DOM on init-->
+					<div class="drop-dest" dndPlaceholderRef>&nbsp;
+					</div>
+				</section>
       </td>
+			<td>
+				<ng-container *ngIf="kegs[tap.number]">
+					<button (click)="onContextMenu($event, tap)" class="btn btn-light">...</button>
+				</ng-container>
+			</td>
     </tr>
   </ng-container>
   </tbody>

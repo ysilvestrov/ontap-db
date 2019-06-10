@@ -25,56 +25,56 @@ import { WeightEditorComponent } from './weight-editor/weight-editor.component';
 import { BeerKegEditorComponent } from './beer-keg-editor/beer-keg-editor.component';
 
 const itemRoutes: Routes = [
-  { path: 'queue', component: TapsQueueComponent},
-  { path: 'print', component: TapsPrintComponent},
-  { path: 'storage', component: StorageComponent},
+	{ path: 'queue', component: TapsQueueComponent},
+	{ path: 'print', component: TapsPrintComponent},
+	{ path: 'storage', component: StorageComponent},
 ];
 
 const appRoutes: Routes = [
-  { path: 'login', component: LoginComponent},
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]},
-  { path: 'dashboard/:id', component: DashboardComponent, canActivate: [AuthGuard]},
-  { path: 'dashboard/:id', component: DashboardComponent, canActivate: [AuthGuard], children: itemRoutes},
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full'  },
-  { path: '**', component: PageNotFoundComponent }
+	{ path: 'login', component: LoginComponent},
+	{ path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]},
+	{ path: 'dashboard/:id', component: DashboardComponent, canActivate: [AuthGuard]},
+	{ path: 'dashboard/:id', component: DashboardComponent, canActivate: [AuthGuard], children: itemRoutes},
+	{ path: '', redirectTo: '/dashboard', pathMatch: 'full'  },
+	{ path: '**', component: PageNotFoundComponent }
 ];
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    PageNotFoundComponent,
-    DashboardComponent,
-    DashboardTopbarComponent,
-    DashboardSidebarComponent,
-    TapsQueueComponent,
-    TapsPrintComponent,
-    SortByTapPipe,
-    StorageComponent,
-    WeightEditorComponent,
-    BeerKegEditorComponent
-  ],
-  imports: [
-    BrowserModule,
-    ReactiveFormsModule,
-    RouterModule.forRoot(appRoutes),
-    HttpClientModule,
-    ContextMenuModule.forRoot({
-      useBootstrap4: true,
-    }),
-    JwtModule.forRoot({
-      config: {
-        tokenGetter: tokenGetter,
-        whitelistedDomains: ['localhost:3001'],
-        blacklistedRoutes: ['localhost:3001/auth/']
-      }
-    }),
-    NgbModule,
-    MomentModule,
-    DndModule
-  ],
-  providers: [{provide: NgbDateAdapter, useClass: NgbDateNativeAdapter}],
-  bootstrap: [AppComponent]
+	declarations: [
+		AppComponent,
+		LoginComponent,
+		PageNotFoundComponent,
+		DashboardComponent,
+		DashboardTopbarComponent,
+		DashboardSidebarComponent,
+		TapsQueueComponent,
+		TapsPrintComponent,
+		SortByTapPipe,
+		StorageComponent,
+		WeightEditorComponent,
+		BeerKegEditorComponent
+	],
+	imports: [
+		BrowserModule,
+		ReactiveFormsModule,
+		RouterModule.forRoot(appRoutes),
+		HttpClientModule,
+		ContextMenuModule.forRoot({
+			useBootstrap4: true,
+		}),
+		JwtModule.forRoot({
+			config: {
+				tokenGetter: tokenGetter,
+				whitelistedDomains: ['localhost:3001'],
+				blacklistedRoutes: ['localhost:3001/auth/']
+			}
+		}),
+		NgbModule,
+		MomentModule,
+		DndModule
+	],
+	providers: [{provide: NgbDateAdapter, useClass: NgbDateNativeAdapter}],
+	bootstrap: [AppComponent]
 })
 export class AppModule { }
 

@@ -1,3 +1,23 @@
-<p>
-  taps-print works!
-</p>
+<table class="table table-hover d-print-table">
+	<tbody>
+	<ng-container *ngFor="let tap of taps">
+		<tr>
+			<td><h1>{{tap.number}}</h1></td>
+			<td>
+				<ng-container *ngIf="kegs[tap.number]">
+					{{kegs[tap.number].keg.beer.brewery.name}} - {{kegs[tap.number].keg.beer.name}}<br />
+					<ng-container>
+						<small *ngIf="kegs[tap.number].keg.beer.description">{{kegs[tap.number].keg.beer.description}}</small><br/>
+					</ng-container>
+					<em>
+						ABV: {{kegs[tap.number].keg.beer.alcohol}}%
+						OG: {{kegs[tap.number].keg.beer.gravity}}%
+						IBU: {{kegs[tap.number].keg.beer.ibu}}
+					</em>
+				</ng-container>
+			</td>
+		</tr>
+	</ng-container>
+	</tbody>
+</table>
+
