@@ -10,6 +10,7 @@ import {ContextMenuComponent, ContextMenuService} from 'ngx-contextmenu';
 import {TapService} from '../tap.service';
 // import {FormsModule} from '@angular/forms';
 import {BeerCalculatorService} from '../beer-calculator.service';
+import {StorageService} from '../storage.service';
 
 @Component({
 	selector: 'app-taps-queue',
@@ -18,6 +19,7 @@ import {BeerCalculatorService} from '../beer-calculator.service';
 })
 export class TapsQueueComponent implements OnInit {
 	constructor(
+		private storageService: StorageService,
 		private queueService: QueueService,
 		private tapService: TapService,
 		private calculator: BeerCalculatorService,
@@ -29,6 +31,7 @@ export class TapsQueueComponent implements OnInit {
 			params => {
 				this.id = params['id'];
 				this.getTaps();
+				this.getKegs();
 			}
 		);
 	}
@@ -44,6 +47,10 @@ export class TapsQueueComponent implements OnInit {
 	public directQueue: BeerKegOnTap[][];
 	public weights: number[];
 	public weighting: Tap;
+	public totalInQueue: number;
+	public totalInDirectQueue: number;
+	public totalOnTap: number;
+	public totalInStorage: number;
 
 	private static isNumber(value: string | number): boolean {
 		return !isNaN(Number(value.toString()));
@@ -103,6 +110,9 @@ export class TapsQueueComponent implements OnInit {
 				this.weights = [];
 				this.directQueue = [];
 				this.queue = [];
+				this.totalInQueue = 0;
+				this.totalInDirectQueue = 0;
+				this.totalOnTap = 0;
 				this.taps.forEach(
 					t => {
 						const kegOnTaps = t.beerKegsOnTap
@@ -120,10 +130,14 @@ export class TapsQueueComponent implements OnInit {
 						this.processQueue(queue);
 					});
 			},
-			(error1 => {
-				this.errorMessage = error1.message;
-			})
+			this.processError
 		);
+	}
+
+	private getKegs() {
+		this.storageService.getKegs(this.id).subscribe(kegs => {
+			this.totalInStorage = kegs.length;
+		}, this.processError);
 	}
 
 	public processBeerKegsOnTap(kegOnTaps: BeerKegOnTap[], tapNumber) {
@@ -131,11 +145,15 @@ export class TapsQueueComponent implements OnInit {
 			kegOnTaps.sort(TapsQueueComponent.timeCompare);
 
 			const keg = kegOnTaps[0];
+
 			if (keg.installTime != null) {
 				this.directQueue[tapNumber] = kegOnTaps.slice(1);
+				this.totalInDirectQueue += kegOnTaps.length - 1;
 				this.kegs[tapNumber] = keg;
+				this.totalOnTap++;
 			} else {
 				this.directQueue[tapNumber] = kegOnTaps;
+				this.totalInDirectQueue++;
 			}
 
 			if (keg && keg.keg && keg.keg.keg && keg.installTime != null) {
@@ -155,6 +173,7 @@ export class TapsQueueComponent implements OnInit {
 					this.queue[this.taps[number].number] = value;
 				}
 			});
+		this.totalInQueue = kegsInQueue.length;
 	}
 
 
@@ -324,4 +343,7 @@ export class TapsQueueComponent implements OnInit {
 		$event.stopPropagation();
 	}
 
+	processError = err => this.errorMessage = err.error.error ?  err.error.error.message : err.error.toString();
+
+	clearError = () => this.errorMessage = null;
 }

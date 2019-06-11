@@ -2,10 +2,28 @@
   {{errorMessage}}
 </div>
 <div class="row">
-  <div class="col-sm-10">
+  <div class="col-sm-2">
     Dashboard
   </div>
-  <div class="col-sm-2 text-right">
+	<div class="col-sm-8">
+		<span class="badge badge-primary">
+			<i class="fas fa-beer"></i>&nbsp;
+			<span class="badge badge-light">{{totalOnTap}}</span>
+		</span>&nbsp;
+		<span class="badge badge-success">
+			<i class="fas fa-traffic-light"></i>&nbsp;
+			<span class="badge badge-light">{{totalInDirectQueue}}</span>
+		</span>&nbsp;
+		<span class="badge badge-warning">
+			<i class="fas fa-stopwatch"></i>&nbsp;
+			<span class="badge badge-light">{{totalInQueue}}</span>
+		</span>&nbsp;
+		<span class="badge badge-info">
+			<i class="fas fa-boxes"></i>&nbsp;
+			<span class="badge badge-light">{{totalInStorage}}</span>
+		</span>&nbsp;
+	</div>
+	<div class="col-sm-2 text-right">
     <button class="btn btn-outline-secondary" (click)="refresh()" *ngIf="taps">
       <i class="fas fa-sync"></i>
     </button>
@@ -14,7 +32,7 @@
 <table class="table table-hover">
   <thead>
   <tr>
-    <th scope="col">Кран</th>
+    <th scope="col"><i class="fas fa-beer"></i>&nbsp;Кран</th>
     <th scope="col">Производитель</th>
     <th scope="col">Сорт</th>
     <th scope="col">ABV</th>
@@ -22,8 +40,8 @@
     <th scope="col">IBU</th>
     <th scope="col">Поставили</th>
     <th scope="col">Остаток</th>
-    <th scope="col">Прямая очередь</th>
-    <th scope="col">Общая очередь</th>
+    <th scope="col"><i class="fas fa-traffic-light"></i>&nbsp;Прямая очередь</th>
+    <th scope="col"><i class="fas fa-stopwatch"></i>&nbsp;Общая очередь</th>
     <th scope="col">&nbsp;</th>
   </tr>
   </thead>
