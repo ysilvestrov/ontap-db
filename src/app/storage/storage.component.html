@@ -6,7 +6,7 @@
     Склад
   </div>
   <div class="col-sm-2">
-    <button class="btn btn-outline-primary" (click)="showAddingKeg()" *ngIf="beers && breweries && !addingMode">
+    <button class="btn btn-outline-primary" (click)="startAddingKeg()" *ngIf="beers && breweries && !addingMode">
       <i class="far fa-plus-square"></i>
     </button>
     <button class="btn btn-outline-secondary" (click)="refresh()" *ngIf="kegs && beers && breweries">
@@ -16,8 +16,8 @@
 </div>
 <ng-container *ngIf="addingMode">
   <div class="jumbotron jumbotron-fluid">
-    <app-beer-keg-editor [beers]="beers" [breweries]="breweries" [beerKeg]="currentBeerKeg"
-                         (added)="addKeg($event)" (canceled)="cancelAddingKeg()" ></app-beer-keg-editor>
+    <app-beer-keg-editor [mode]="'add'" [beers]="beers" [breweries]="breweries" [beerKeg]="currentBeerKeg"
+                         (updated)="addKeg($event)" (canceled)="cancelUpdatingKeg()" ></app-beer-keg-editor>
   </div>
 </ng-container>
 <table class="table">
@@ -34,46 +34,56 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let keg of kegs" [contextMenu]="basicMenu" [contextMenuSubject]="keg">
-    <td>
-      <ng-container *ngIf="keg.beer">{{keg.beer.brewery.name}}</ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="keg.beer">{{keg.beer.name}}</ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="keg.beer">{{keg.beer.alcohol}}</ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="keg.beer">{{keg.beer.gravity}}</ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="keg.beer">{{keg.beer.ibu}}</ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="keg">
-        <time *ngIf="keg.packageDate">{{keg.packageDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
-      </ng-container>
-    </td>
-    <td>
-      <ng-container *ngIf="keg">
-        <time *ngIf="keg.bestBeforeDate">{{keg.bestBeforeDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
-      </ng-container>
-    </td>
-		<td>
-			<ng-container *ngIf="keg">
-				<button (click)="onContextMenu($event, keg)" class="btn btn-light">...</button>
+	<ng-container *ngFor="let keg of kegs">
+		<tr [contextMenu]="basicMenu" [contextMenuSubject]="keg">
+			<ng-container *ngIf="keg.beer && keg.beer.id != 'NA'; else noBeer">
+				<td>{{keg.beer.brewery.name}}</td>
+				<td>{{keg.beer.name}}</td>
+				<td>{{keg.beer.alcohol}}</td>
+				<td>{{keg.beer.gravity}}</td>
+				<td>{{keg.beer.ibu}}</td>
 			</ng-container>
-		</td>
-  </tr>
+			<ng-template #noBeer>
+				<td colspan="5">
+					<h4 class="text-center">
+						<span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i>&nbsp;Неизвестное пиво!</span>
+					</h4>
+				</td>
+			</ng-template>
+			<td>
+				<ng-container *ngIf="keg">
+					<time *ngIf="keg.packageDate">{{keg.packageDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
+				</ng-container>
+			</td>
+			<td>
+				<ng-container *ngIf="keg">
+					<time *ngIf="keg.bestBeforeDate">{{keg.bestBeforeDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
+				</ng-container>
+			</td>
+			<td>
+				<ng-container *ngIf="keg">
+					<button (click)="onContextMenu($event, keg)" class="btn btn-light">...</button>
+				</ng-container>
+			</td>
+		</tr>
+		<tr class="table-info" *ngIf="editingMode && currentBeerKeg.id === keg.id">
+			<td colspan="7">
+				<app-beer-keg-editor [beers]="beers" [breweries]="breweries" [beerKeg]="currentBeerKeg"
+														 (updated)="updateKeg($event)" (canceled)="cancelUpdatingKeg()" ></app-beer-keg-editor>
+			</td>
+		</tr>
+	</ng-container>
   </tbody>
 </table>
 
 <context-menu>
-  <ng-template contextMenuItem let-keg (execute)="addToQueue($event.item)">
-    &nbsp;Добавить "{{keg?.beer?.brewery?.name}} - {{keg?.beer?.name}}" в общую очередь&nbsp;
+  <ng-template contextMenuItem let-keg [enabled]="isBeerDefined" (execute)="addToQueue($event.item)">
+    &nbsp;Добавить "{{formatterBeer(keg?.beer)}}" в общую очередь&nbsp;
   </ng-template>
   <ng-template contextMenuItem let-keg (execute)="removeFromStorage($event.item)">
-    &nbsp;Удалить "{{keg?.beer?.brewery?.name}} - {{keg?.beer?.name}}" из склада&nbsp;
+    &nbsp;Удалить "{{formatterBeer(keg?.beer)}}" из склада&nbsp;
+  </ng-template>
+	<ng-template contextMenuItem let-keg (execute)="startEditingKeg($event.item)">
+    &nbsp;Редактировать "{{formatterBeer(keg?.beer)}}" &nbsp;
   </ng-template>
 </context-menu>

@@ -1,151 +1,185 @@
 <ng-template #rt let-r="result" let-t="term">
-  <ngb-highlight [result]="r" [term]="t"></ngb-highlight>
+	<ngb-highlight [result]="r" [term]="t"></ngb-highlight>
 </ng-template>
 
-<form class="form" [formGroup]="beerKegForm" (ngSubmit)="onSubmit()">
-  <div class="form-group mx-sm-3 mb-2 mt-2 row">
-    <label for="typeahead-beer" class="col-sm-2 col-form-label">Пиво </label>
-    <div class="col-sm-10">
-      <div class="input-group">
-        <input id="typeahead-beer" type="text" class="form-control" [(ngModel)]="beerName"
-               formControlName="beerName" (change)="onBeerChange($event)" [readonly]="addingBeerMode"
-               [resultTemplate]="rt" [ngbTypeahead]="searchBeer" [resultFormatter]="formatterBeer"
-               placeholder="..." (selectItem)="selectBeer($event)"/>
-        <div class="input-group-append">
-          <button class="btn btn-outline-secondary" (click)="startAddingBeer()" type="button"><i class="fas fa-plus"></i></button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="border-left border-primary pl-1 ml-3" *ngIf="addingBeerMode">
-    <div class="form-group mx-sm-3 mb-2 row">
-      <label for="typeahead-brewery" class="col-sm-2 col-form-label">Пивоварня </label>
-      <div class="col-sm-10">
-        <div class="input-group">
-          <input id="typeahead-brewery" type="text" class="form-control" [(ngModel)]="breweryName"
-                 formControlName="newBeerBrewery" (change)="onBreweryChange($event)"
-                 [resultTemplate]="rt" [ngbTypeahead]="searchBrewery" [resultFormatter]="formatterBrewery"
-                (selectItem)="selectBrewery($event)" placeholder="..."/>
-        </div>
-      </div>
-    </div>
-    <div class="form-group mx-sm-3 mb-2 row">
-      <label for="beer-name" class="col-sm-2 col-form-label">Название </label>
-      <div class="col-sm-10">
-        <input class="form-control w-100" id="beer-name" [(ngModel)]="addingBeer.name" formControlName="newBeerName"/>
-      </div>
-    </div>
-    <div class="form-group mx-sm-3 mb-2 row">
-      <label for="abv" class="col-sm-2 col-form-label">ABV </label>
-      <div class="col-sm-10">
-        <div class="input-group">
-          <input type="number" class="form-control-number" id="abv" [(ngModel)]="addingBeer.alcohol"
-                 formControlName="newBeerDescription" placeholder="0"/>
-          <div class="input-group-append">
-            <div class="input-group-text">%</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="form-group mx-sm-3 mb-2 row">
-      <label for="og" class="col-sm-2 col-form-label">OG </label>
-      <div class="col-sm-10">
-        <div class="input-group">
-          <input type="number" class="form-control-number" id="og" [(ngModel)]="addingBeer.gravity" formControlName="newBeerOg"/>
-          <div class="input-group-append">
-            <div class="input-group-text">%</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="form-group mx-sm-3 mb-2 row">
-      <label for="ibu" class="col-sm-2 col-form-label">IBU </label>
-      <div class="col-sm-10">
-        <div class="input-group">
-          <input type="number" class="form-control-number" id="ibu" [(ngModel)]="addingBeer.ibu" formControlName="newBeerIbu"/>
-        </div>
-      </div>
-    </div>
-    <div class="form-group mx-sm-3 mb-2 row">
-      <label for="description" class="col-sm-2 col-form-label">Описание </label>
-      <div class="col-sm-10">
-        <div class="input-group">
-          <textarea class="form-control w-100" id="description" [(ngModel)]="addingBeer.description" formControlName="newBeerDescription">
+<form class="form" (ngSubmit)="onSubmit()">
+	<div class="form-group mx-sm-3 mb-2 mt-2 row">
+			<label for="typeahead-beer" class="col-sm-2 col-form-label">Пиво </label>
+		<div class="col-sm-10">
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<div class="input-group-text">
+						<input type="checkbox" [(ngModel)]="_isKnownBeer" name="isUnknownBeer"
+									 aria-label="Unknown beer?">
+					</div>
+				</div>
+				<input id="typeahead-beer" type="text" class="form-control" [(ngModel)]="_beerName" name="beerName"
+							 (change)="onBeerChange($event)" [readOnly]="_addingBeerMode || !_isKnownBeer"
+							 [resultTemplate]="rt" [ngbTypeahead]="searchBeer" [resultFormatter]="formatterBeer"
+							 placeholder="..." (selectItem)="selectBeer($event)"/>
+				<div class="input-group-append" *ngIf="_isKnownBeer">
+					<button class="btn btn-outline-secondary" (click)="startAddingBeer()" type="button"><i
+						class="fas fa-plus"></i></button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="border-left border-primary pl-1 ml-3" *ngIf="_addingBeerMode">
+		<div class="form-group mx-sm-3 mb-2 row">
+			<label for="typeahead-brewery" class="col-sm-2 col-form-label">Пивоварня </label>
+			<div class="col-sm-10">
+				<div class="input-group">
+					<input id="typeahead-brewery" type="text" class="form-control" [(ngModel)]="_breweryName" name="breweryName"
+								 (change)="onBreweryChange($event)"
+								 [resultTemplate]="rt" [ngbTypeahead]="searchBrewery" [resultFormatter]="formatterBrewery"
+								 (selectItem)="selectBrewery($event)" placeholder="..."/>
+				</div>
+			</div>
+		</div>
+		<div class="form-group mx-sm-3 mb-2 row">
+			<label for="beer-name" class="col-sm-2 col-form-label">Название </label>
+			<div class="col-sm-10">
+				<input class="form-control w-100" id="beer-name" [(ngModel)]="_addingBeer.name" name="addingBeerName"/>
+			</div>
+		</div>
+		<div class="form-group mx-sm-3 mb-2 row">
+			<label for="abv" class="col-sm-2 col-form-label">ABV </label>
+			<div class="col-sm-10">
+				<div class="input-group">
+					<input type="number" class="form-control-number" id="abv" [(ngModel)]="_addingBeer.alcohol"
+								 name="addingBeerAlcohol"
+								 placeholder="0"/>
+					<div class="input-group-append">
+						<div class="input-group-text">%</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group mx-sm-3 mb-2 row">
+			<label for="og" class="col-sm-2 col-form-label">OG </label>
+			<div class="col-sm-10">
+				<div class="input-group">
+					<input type="number" class="form-control-number" id="og" [(ngModel)]="_addingBeer.gravity"
+								 name="addingBeerGravity"/>
+					<div class="input-group-append">
+						<div class="input-group-text">%</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group mx-sm-3 mb-2 row">
+			<label for="ibu" class="col-sm-2 col-form-label">IBU </label>
+			<div class="col-sm-10">
+				<div class="input-group">
+					<input type="number" class="form-control-number" id="ibu" [(ngModel)]="_addingBeer.ibu" name="addingBeerIbu"/>
+				</div>
+			</div>
+		</div>
+		<div class="form-group mx-sm-3 mb-2 row">
+			<label for="description" class="col-sm-2 col-form-label">Описание </label>
+			<div class="col-sm-10">
+				<div class="input-group">
+          <textarea class="form-control w-100" id="description" [(ngModel)]="_addingBeer.description"
+										name="addingBeerВescription">
           </textarea>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-6">
-        <button (click)="addBeer()" class="btn btn-primary">ОК</button>
-      </div>
-      <div class="col-sm-6">
-        <button (click)="cancelAddingBeer()" class="btn btn-secondary">Не добавлять</button>
-      </div>
-    </div>
-  </div>
-  <div class="form-group mx-sm-3 mb-2 row">
-    <label for="empty-weight" class="col-sm-2 col-form-label">Пустой вес </label>
-    <div class="col-sm-10">
-      <div class="input-group">
-        <input type="number" class="form-control-number" id="empty-weight" [(ngModel)]="beerKeg.keg.emptyWeight" formControlName="emptyWeight"/>
-        <div class="input-group-append">
-          <div class="input-group-text">кг</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="form-group mx-sm-3 mb-2 row">
-    <label for="current-weight" class="col-sm-2 col-form-label">Текущий вес </label>
-    <div class="col-sm-10">
-      <div class="input-group">
-        <input type="number" class="form-control-number" id="current-weight" formControlName="currentWeight"/>
-        <div class="input-group-append">
-          <div class="input-group-text">кг</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="form-group mx-sm-3 mb-2 row">
-    <label for="keg-volume" class="col-sm-2 col-form-label">Объём кега </label>
-    <div class="col-sm-10">
-      <div class="input-group">
-        <input type="number" class="form-control-number" [(ngModel)]="beerKeg.keg.volume"  id="keg-volume"
-               formControlName="kegVolume"/>
-        <div class="input-group-append">
-            <div class="input-group-text">л</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="form-group mx-sm-3 mb-2 row">
-    <label for="best-before-date" class="col-sm-2 col-form-label">Выпить до </label>
-    <div class="col-sm-10">
-      <div class="input-group">
-        <input class="form-control" placeholder="yyyy-mm-dd" id="best-before-date"
-               name="best-before-date" [(ngModel)]="_beerKeg.bestBeforeDate" ngbDatepicker
-               formControlName="bestBeforeDate" #dbbd="ngbDatepicker">
-        <div class="input-group-append">
-          <button class="btn btn-outline-secondary" (click)="dbbd.toggle()" type="button"><i class="far fa-calendar"></i></button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="form-group mx-sm-3 mb-2 row">
-    <label for="package-date" class="col-sm-2 col-form-label">Упаковано </label>
-    <div class="col-sm-10">
-      <div class="input-group">
-        <input class="form-control" placeholder="yyyy-mm-dd" id="package-date"
-               name="package-date" [(ngModel)]="_beerKeg.packageDate" ngbDatepicker
-               formControlName="packageDate" #dpd="ngbDatepicker">
-        <div class="input-group-append">
-          <button class="btn btn-outline-secondary" (click)="dpd.toggle()" type="button"><i class="far fa-calendar"></i></button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <button type="submit" class="btn btn-primary mb-2">Добавить кег</button>
-  <button type="button" class="close" aria-label="Close" (click)="onCanceled()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<button (click)="addBeer()" class="btn btn-primary">ОК</button>
+			</div>
+			<div class="col-sm-6">
+				<button (click)="cancelAddingBeer()" class="btn btn-secondary">Не добавлять</button>
+			</div>
+		</div>
+	</div>
+	<div class="form-group mx-sm-3 mb-2 row">
+		<label for="empty-weight" class="col-sm-2 col-form-label">Пустой вес </label>
+		<div class="col-sm-10">
+			<div class="input-group">
+				<input type="number" class="form-control-number" id="empty-weight" [(ngModel)]="beerKeg.keg.emptyWeight"
+							 name="emptyWeight"/>
+				<div class="input-group-append">
+					<div class="input-group-text">кг</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-group mx-sm-3 mb-2 row">
+		<label for="current-weight" class="col-sm-2 col-form-label">Текущий вес </label>
+		<div class="col-sm-10">
+			<div class="input-group">
+				<input type="number" class="form-control-number" id="current-weight" [(ngModel)]="_currentWeight"
+							 name="currentWeight"/>
+				<div class="input-group-append">
+					<div class="input-group-text">кг</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-group mx-sm-3 mb-2 row">
+		<label for="keg-volume" class="col-sm-2 col-form-label">Объём кега </label>
+		<div class="col-sm-10">
+			<div class="input-group">
+				<input type="number" class="form-control-number" [(ngModel)]="beerKeg.keg.volume" id="keg-volume"
+							 name="kegVolume"/>
+				<div class="input-group-append">
+					<div class="input-group-text">л</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-group mx-sm-3 mb-2 row">
+		<label for="best-before-date" class="col-sm-2 col-form-label">Выпить до </label>
+		<div class="col-sm-10">
+			<div class="input-group">
+				<input class="form-control" placeholder="yyyy-mm-dd" id="best-before-date"
+							 name="best-before-date" ngbDatepicker #dpb="ngbDatepicker" [(ngModel)]="_bestBeforeDate">
+				<div class="input-group-append">
+					<button class="btn btn-outline-secondary" (click)="dpb.toggle()" type="button"><i class="far fa-calendar"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-group mx-sm-3 mb-2 row">
+		<label for="package-date" class="col-sm-2 col-form-label">Упаковано </label>
+		<div class="col-sm-10">
+			<div class="input-group">
+				<input class="form-control" placeholder="yyyy-mm-dd" id="package-date"
+							 name="package-date" [(ngModel)]="_packageDate" ngbDatepicker #dpd="ngbDatepicker">
+				<div class="input-group-append">
+					<button class="btn btn-outline-secondary" (click)="dpd.toggle()" type="button"><i class="far fa-calendar"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-3">
+				<ng-container *ngIf="_addingMode">
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<button type="submit" class="btn btn-primary" id="button-add">Добавить</button>
+						</div>
+						<input type="number" class="form-control" name="kegsToAdd" [(ngModel)]="_kegsToAdd" aria-label="Кол-во кегов"
+									 aria-describedby="button-add">
+						<div class="input-group-append">
+							<div class="input-group-text">кег</div>
+						</div>
+					</div>
+				</ng-container>
+				<ng-container *ngIf="!_addingMode">
+					<button type="submit" class="btn btn-primary mb-2" id="button-edit">Сохранить</button>
+				</ng-container>
+			</div>
+			<div class="col-sm-9">
+				<button type="button" class="close" aria-label="Close" (click)="onCanceled()">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		</div>
+	</div>
 </form>

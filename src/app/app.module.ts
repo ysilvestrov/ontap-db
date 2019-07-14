@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {JwtHelperService, JwtModule} from '@auth0/angular-jwt';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
@@ -52,7 +52,7 @@ const appRoutes: Routes = [
 		SortByTapPipe,
 		StorageComponent,
 		WeightEditorComponent,
-		BeerKegEditorComponent
+		BeerKegEditorComponent,
 	],
 	imports: [
 		BrowserModule,
@@ -71,9 +71,9 @@ const appRoutes: Routes = [
 		}),
 		NgbModule,
 		MomentModule,
-		DndModule
+		DndModule,
+		FormsModule
 	],
-	providers: [{provide: NgbDateAdapter, useClass: NgbDateNativeAdapter}],
 	bootstrap: [AppComponent]
 })
 export class AppModule { }

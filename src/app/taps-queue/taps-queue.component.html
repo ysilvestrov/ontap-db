@@ -6,21 +6,25 @@
     Dashboard
   </div>
 	<div class="col-sm-8">
-		<span class="badge badge-primary">
+		<span class="badge badge-primary" title="На кранах">
 			<i class="fas fa-beer"></i>&nbsp;
 			<span class="badge badge-light">{{totalOnTap}}</span>
 		</span>&nbsp;
-		<span class="badge badge-success">
+		<span class="badge badge-success" title="Прямая очередь">
 			<i class="fas fa-traffic-light"></i>&nbsp;
 			<span class="badge badge-light">{{totalInDirectQueue}}</span>
 		</span>&nbsp;
-		<span class="badge badge-warning">
+		<span class="badge badge-warning" title="Общая очередь">
 			<i class="fas fa-stopwatch"></i>&nbsp;
 			<span class="badge badge-light">{{totalInQueue}}</span>
 		</span>&nbsp;
-		<span class="badge badge-info">
+		<span class="badge badge-info" title="Пиво на складе">
 			<i class="fas fa-boxes"></i>&nbsp;
 			<span class="badge badge-light">{{totalInStorage}}</span>
+		</span>&nbsp;
+		<span class="badge badge-danger" *ngIf="unknownInStorage > 0" title="Неизвестное пиво на складе">
+			<i class="fas fa-exclamation-triangle"></i>&nbsp;
+			<span class="badge badge-light">{{unknownInStorage}}</span>
 		</span>&nbsp;
 	</div>
 	<div class="col-sm-2 text-right">
@@ -51,7 +55,7 @@
       <td colspan="10">
         <div>
           <app-weight-editor [weight]="weights[tap.number] | number:'1.1-1'"
-                             (weighted)="onWeighted($weight)"
+                             (weighted)="onWeighted($event)"
                              (canceled)="onWeightingCancelled()"></app-weight-editor>
         </div>
       </td>

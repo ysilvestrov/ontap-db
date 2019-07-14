@@ -51,6 +51,7 @@ export class TapsQueueComponent implements OnInit {
 	public totalInDirectQueue: number;
 	public totalOnTap: number;
 	public totalInStorage: number;
+	public unknownInStorage: number;
 
 	private static isNumber(value: string | number): boolean {
 		return !isNaN(Number(value.toString()));
@@ -137,6 +138,7 @@ export class TapsQueueComponent implements OnInit {
 	private getKegs() {
 		this.storageService.getKegs(this.id).subscribe(kegs => {
 			this.totalInStorage = kegs.length;
+			this.unknownInStorage = kegs.filter((keg: BeerKeg) => keg.beer == null || keg.beer.id === 'NA').length;
 		}, this.processError);
 	}
 

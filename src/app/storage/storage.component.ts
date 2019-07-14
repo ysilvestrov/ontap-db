@@ -2,13 +2,16 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
-import {Beer, BeerKeg, Brewery, Keg} from '../ontap.models';
+import {Beer, BeerKeg, Brewery, Keg, Tap} from '../ontap.models';
 import {StorageService} from '../storage.service';
 import {ContextMenuComponent, ContextMenuService} from 'ngx-contextmenu';
 import {QueueService} from '../queue.service';
 import {BeerService} from '../beer.service';
 import {forEach} from '@angular/router/src/utils/collection';
 import {BreweryService} from '../brewery.service';
+import * as moment from 'moment';
+import {NgbDate} from '@ng-bootstrap/ng-bootstrap';
+import {NBeerKeg} from '../beer-keg-editor/beer-keg-editor.component';
 
 @Component({
 	selector: 'app-storage',
@@ -46,6 +49,7 @@ export class StorageComponent implements OnInit {
 	public errorMessage: any;
 	public addingMode = false;
 	public currentBeerKeg: BeerKeg;
+	public editingMode = false;
 
 	private getKegs() {
 		this.storageService.getKegs(this.id).subscribe(kegs => {
@@ -86,22 +90,41 @@ export class StorageComponent implements OnInit {
 	ngOnInit() {
 	}
 
-	showAddingKeg() {
+	startAddingKeg() {
 		this.addingMode = true;
+		this.editingMode = false;
 		this.currentBeerKeg = new BeerKeg({keg: new Keg(), beer: new Beer()});
 	}
 
-	public cancelAddingKeg() {
+	cancelUpdatingKeg() {
 		this.addingMode = false;
+		this.editingMode = false;
 		this.currentBeerKeg = null;
 	}
+	
+	startEditingKeg(item: BeerKeg) {
+		this.addingMode = false;
+		this.editingMode = true;
+		this.currentBeerKeg = item;
+	}
+	
+	updateKeg(nbeerkeg: NBeerKeg) {
+		const keg = nbeerkeg.item;
+		this.storageService.updateKeg(this.id, keg).subscribe(k => {
+			const _kegs = [];
+			this.kegs.forEach(_ => _.id === keg.id ? _kegs.push(k) : _kegs.push(_));
+			this.kegs = _kegs;
+		}, this.processError);
+		this.editingMode = false;
+	}
 
-	addKeg(keg) {
-		console.log(JSON.stringify(keg));
-		this.storageService.addKeg(this.id, keg).subscribe(k => {
+	addKeg(nbeerkeg: NBeerKeg) {
+		const keg = nbeerkeg.item;
+		const count = nbeerkeg.count;
+		this.storageService.addKeg(this.id, keg, count).subscribe(k => {
 			const _kegs = [];
 			this.kegs.forEach(_ => _kegs.push(_));
-			_kegs.push(keg);
+			k.forEach(_ => _kegs.push(_));
 			this.kegs = _kegs;
 		}, this.processError);
 		this.addingMode = false;
@@ -126,5 +149,18 @@ export class StorageComponent implements OnInit {
 		});
 		$event.preventDefault();
 		$event.stopPropagation();
+	}
+
+	public isBeerDefined(keg: BeerKeg) {
+		return keg != null && keg.beer != null && keg.beer.id !== 'NA';
+	}
+
+	formatterBeer = (b: Beer) => {
+		return b && b.brewery && b.id !== 'NA' ? `${b.brewery.name} - ${b.name}` : '? - ?';
+	}
+
+	convertDate(value: Date) {
+		const date = moment(value);
+		return new NgbDate(date.year(), date.month() + 1, date.date());
 	}
 }
