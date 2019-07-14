@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Beer, BeerKeg, BeerKegWeight, Brewery, Keg} from '../ontap.models';
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
-import {NgbDate, NgbDateAdapter, NgbDateNativeAdapter, NgbDateStruct, NgbTypeaheadSelectItemEvent} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDateStruct, NgbTypeaheadSelectItemEvent} from '@ng-bootstrap/ng-bootstrap';
 import * as moment from 'moment';
 
 export interface Countable<T> {
@@ -99,14 +99,14 @@ export class BeerKegEditorComponent implements OnInit {
 
 	public _addingBeerMode = false;
 	public _addingBeer: Beer;
-	private _beerKeg: BeerKeg;
-	private _beerName: string;
-	private _breweryName: string;
-	private _beers: Beer[];
-	private _breweries: Brewery[];
-	private _addingMode: boolean;
-	private _kegsToAdd = 1;
-	private _isKnownBeer = false;
+	public _beerKeg: BeerKeg;
+	public _beerName: string;
+	public _breweryName: string;
+	public _beers: Beer[];
+	public _breweries: Brewery[];
+	public _addingMode: boolean;
+	public _kegsToAdd = 1;
+	public _isKnownBeer = false;
 
 	@Output() updated = new EventEmitter<NBeerKeg>();
 	@Output() canceled = new EventEmitter<null>();
