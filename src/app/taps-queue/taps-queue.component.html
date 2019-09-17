@@ -60,8 +60,19 @@
         </div>
       </td>
     </tr>
+		<tr class="table-info" *ngIf="pricing && tap && pricing.id === tap.id">
+      <td colspan="10">
+        <div>
+          <app-beer-price-editor [price]="prices[kegs[tap.number].keg.beer.id]" (updated)="onPriced($event)"
+																 (canceled)="onPricingCancelled()"></app-beer-price-editor>
+        </div>
+      </td>
+    </tr>
     <tr [contextMenu]="tapMenu" [contextMenuSubject]="tap">
-      <td>{{tap.number}}</td>
+      <td>
+				{{tap.number}}
+				<span class="badge badge-danger" *ngIf="kegs[tap.number] && ! prices[kegs[tap.number].keg.beer.id]" title="Неоцененное пиво на кране"><i class="fas fa-exclamation-triangle"></i></span>
+			</td>
       <td>
         <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.brewery.name}}</ng-container>
       </td>
@@ -130,6 +141,9 @@
 <context-menu #tapMenu>
   <ng-template contextMenuItem let-tap [enabled]="hasKegOnTap" (execute)="showWeights($event.item)">
     &nbsp;Взвесить&nbsp;{{getBeerNameOnTap(tap.number)}}
+  </ng-template>
+	<ng-template contextMenuItem let-tap [enabled]="hasKegOnTap" (execute)="showPrices($event.item)">
+    &nbsp;Оценить&nbsp;{{getBeerNameOnTap(tap.number)}}
   </ng-template>
   <ng-template contextMenuItem let-tap [enabled]="hasKegOnTap" (execute)="removeBeer($event.item)">
     &nbsp;Снять {{getBeerNameOnTap(tap.number)}} с крана&nbsp;

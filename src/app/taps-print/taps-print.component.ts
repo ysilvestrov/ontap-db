@@ -6,8 +6,9 @@ import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute} from '@angular/router';
 import {ContextMenuService} from 'ngx-contextmenu';
 import {Subscription} from 'rxjs';
-import {BeerKegOnTap, ITap, Tap} from '../ontap.models';
+import {BeerKegOnTap, BeerPrice, ITap, Tap} from '../ontap.models';
 import * as moment from 'moment';
+import {PriceService} from '../price.service';
 
 @Component({
 	selector: 'app-taps-print',
@@ -19,6 +20,7 @@ export class TapsPrintComponent implements OnInit {
 	constructor(
 		private queueService: QueueService,
 		private tapService: TapService,
+		private priceService: PriceService,
 		private http: HttpClient,
 		private route: ActivatedRoute,
 	) {
@@ -26,6 +28,7 @@ export class TapsPrintComponent implements OnInit {
 			params => {
 				this.id = params['id'];
 				this.getTaps();
+				this.getPrices();
 			}
 		);
 	}
@@ -35,10 +38,7 @@ export class TapsPrintComponent implements OnInit {
 	public taps: Tap[];
 	public errorMessage: any;
 	public kegs: BeerKegOnTap[];
-	// public queue: BeerKegOnTap[];
-	// public directQueue: BeerKegOnTap[][];
-	// public weights: number[];
-	// public weighting: Tap;
+	public prices: BeerPrice[];
 
 	private static isNumber(value: string | number): boolean {
 		return !isNaN(Number(value.toString()));
@@ -80,6 +80,8 @@ export class TapsPrintComponent implements OnInit {
 	ngOnInit() {
 	}
 
+	processError = err => this.errorMessage = err.error.error ?  err.error.error.message : err.error.toString();
+
 	private getTaps() {
 		this.queueService.getTaps(this.id).subscribe(
 			taps => {
@@ -111,10 +113,15 @@ export class TapsPrintComponent implements OnInit {
 							});
 					});*/
 			},
-			(error1 => {
-				this.errorMessage = error1.message;
-			})
+			this.processError
 		);
+	}
+
+	private getPrices() {
+		this.priceService.getPrices(this.id).subscribe(prices => {
+			this.prices = [];
+			prices.forEach(price => this.prices[price.beer.id] = price);
+		}, this.processError);
 	}
 
 	public processBeerKegsOnTap(kegOnTaps: BeerKegOnTap[], tapNumber) {

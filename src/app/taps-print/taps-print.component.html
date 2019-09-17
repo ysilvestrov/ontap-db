@@ -16,6 +16,12 @@
 					</em>
 				</ng-container>
 			</td>
+			<td>
+				<ng-container *ngIf="kegs[tap.number] && prices[kegs[tap.number].keg.beer.id]">
+					<h2>{{prices[kegs[tap.number].keg.beer.id].price | number:'1.0-0'}}<i class="fas fa-hryvnia"></i></h2>
+					{{prices[kegs[tap.number].keg.beer.id].volume | number:'1.1-1'}}
+				</ng-container>
+			</td>
 		</tr>
 	</ng-container>
 	</tbody>

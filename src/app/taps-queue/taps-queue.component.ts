@@ -3,7 +3,7 @@ import {QueueService} from '../queue.service';
 import {Subscription} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute} from '@angular/router';
-import {BeerKeg, BeerKegOnTap, ITap, Tap} from '../ontap.models';
+import {BeerKeg, BeerKegOnTap, BeerPrice, IBeerPrice, IPrice, ITap, Pub, Tap} from '../ontap.models';
 import * as moment from 'moment';
 import {ContextMenuComponent, ContextMenuService} from 'ngx-contextmenu';
 // import { DndDropEvent } from 'ngx-drag-drop';
@@ -11,6 +11,7 @@ import {TapService} from '../tap.service';
 // import {FormsModule} from '@angular/forms';
 import {BeerCalculatorService} from '../beer-calculator.service';
 import {StorageService} from '../storage.service';
+import {PriceService} from '../price.service';
 
 @Component({
 	selector: 'app-taps-queue',
@@ -22,6 +23,7 @@ export class TapsQueueComponent implements OnInit {
 		private storageService: StorageService,
 		private queueService: QueueService,
 		private tapService: TapService,
+		private priceService: PriceService,
 		private calculator: BeerCalculatorService,
 		private http: HttpClient,
 		private route: ActivatedRoute,
@@ -32,6 +34,7 @@ export class TapsQueueComponent implements OnInit {
 				this.id = params['id'];
 				this.getTaps();
 				this.getKegs();
+				this.getPrices();
 			}
 		);
 	}
@@ -45,8 +48,10 @@ export class TapsQueueComponent implements OnInit {
 	public kegs: BeerKegOnTap[];
 	public queue: BeerKegOnTap[];
 	public directQueue: BeerKegOnTap[][];
+	public prices: BeerPrice[];
 	public weights: number[];
 	public weighting: Tap;
+	public pricing: Tap;
 	public totalInQueue: number;
 	public totalInDirectQueue: number;
 	public totalOnTap: number;
@@ -139,6 +144,13 @@ export class TapsQueueComponent implements OnInit {
 		this.storageService.getKegs(this.id).subscribe(kegs => {
 			this.totalInStorage = kegs.length;
 			this.unknownInStorage = kegs.filter((keg: BeerKeg) => keg.beer == null || keg.beer.id === 'NA').length;
+		}, this.processError);
+	}
+
+	private getPrices() {
+		this.priceService.getPrices(this.id).subscribe(prices => {
+			this.prices = [];
+			prices.forEach(price => this.prices[price.beer.id] = price);
 		}, this.processError);
 	}
 
@@ -348,4 +360,31 @@ export class TapsQueueComponent implements OnInit {
 	processError = err => this.errorMessage = err.error.error ?  err.error.error.message : err.error.toString();
 
 	clearError = () => this.errorMessage = null;
+
+	public showPrices(tap: Tap) {
+		this.pricing = tap;
+	}
+
+	public onPriced(price: IBeerPrice) {
+		price.beer = this.kegs[this.pricing.number].keg.beer;
+		price.id = 0;
+		price.pub = new Pub();
+		price.updated = new Date();
+		price.validFrom = new Date();
+		price.validTo = new Date();
+		this.priceService.priceBeer(this.id, price).subscribe(res => {
+				this.processBeerPrice(res, this.pricing.number);
+				this.softRefresh();
+				this.pricing = null;
+			}
+		);
+	}
+
+	public onPricingCancelled() {
+		this.pricing = null;
+	}
+
+	private processBeerPrice(price: BeerPrice, tapNumber: string) {
+		this.prices[price.beer.id] = price;
+	}
 }
