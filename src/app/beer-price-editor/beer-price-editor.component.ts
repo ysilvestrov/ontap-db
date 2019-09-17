@@ -11,8 +11,8 @@ export class BeerPriceEditorComponent implements OnInit {
 
 	// region model
 	private _beerPrice = new BeerPrice();
-	private _price = 0;
-	private _volume = 0;
+	public _price = 0;
+	public _volume = 0;
 	// endregion
 
 	get price(): IBeerPrice {
