@@ -170,6 +170,14 @@ export class TapsQueueComponent implements OnInit {
 				this.totalInDirectQueue++;
 			}
 
+			if (keg && keg.tap) {
+				this.taps.forEach(t => {
+					if (t.number === tapNumber) {
+						t.status = keg.tap.status;
+					}
+				});
+			}
+
 			if (keg && keg.keg && keg.keg.keg && keg.installTime != null) {
 				this.processKegWeight(keg.keg, tapNumber);
 			}
@@ -229,18 +237,25 @@ export class TapsQueueComponent implements OnInit {
 			this.weighting = null;
 	}
 
-	public removeBeer(tap: Tap) {
-		this.tapService.sendBackToStorage(tap.id).subscribe(res =>  {
+	public repeatBeer(tap: Tap) {
+		this.tapService.repeatBeer(tap.id).subscribe(res =>  {
 			this.processBeerKegsOnTap(res, tap.number);
 			this.softRefresh();
-		});
+		}, this.processError);
 	}
 
 	public setFromDirectQueue(tap: Tap) {
 		this.tapService.setFromDirectQueue(tap.id).subscribe(res => {
 			this.processBeerKegsOnTap(res, tap.number);
 			this.softRefresh();
-		});
+		}, this.processError);
+	}
+
+	public removeBeer(tap: Tap) {
+		this.tapService.sendBackToStorage(tap.id).subscribe(res => {
+			this.processBeerKegsOnTap(res, tap.number);
+			this.softRefresh();
+		}, this.processError);
 	}
 
 	public removeFromDirectQueue(tap: Tap) {
@@ -248,7 +263,26 @@ export class TapsQueueComponent implements OnInit {
 		this.tapService.removeFromDirectQueue(tap.id, keg).subscribe(res => {
 			this.processBeerKegsOnTap(res, tap.number);
 			this.softRefresh();
-		});
+		}, this.processError);
+	}
+
+	public removeAllFromDirectQueue(tap: Tap) {
+		this.tapService.removeAllFromDirectQueue(tap.id).subscribe(res => {
+			this.processBeerKegsOnTap(res, tap.number);
+			this.softRefresh();
+		}, this.processError);
+	}
+
+	public clearStatus(tap: Tap) {
+		tap.status = 0;
+		this.tapService.update(tap.id, tap).subscribe(res => {
+			this.taps.forEach(t => {
+				if (t.number === tap.number) {
+					t.status = res.status;
+				}
+			});
+			this.softRefresh();
+		}, this.processError);
 	}
 
 	private processKegWeight(bkeg: BeerKeg, tapNumber) {

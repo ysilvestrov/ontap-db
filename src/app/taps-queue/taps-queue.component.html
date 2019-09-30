@@ -71,7 +71,10 @@
     <tr [contextMenu]="tapMenu" [contextMenuSubject]="tap">
       <td>
 				{{tap.number}}
-				<span class="badge badge-danger" *ngIf="kegs[tap.number] && ! prices[kegs[tap.number].keg.beer.id]" title="Неоцененное пиво на кране"><i class="fas fa-exclamation-triangle"></i></span>
+				<span *ngIf="kegs[tap.number] && (tap.status % 16 >= 8)" title="Оставить пустым"><i class="fas fa-thermometer-empty"></i></span>
+				<span *ngIf="kegs[tap.number] && (tap.status % 8 >= 4)" title="Повторить пиво"><i class="fas fa-redo"></i></span>
+				<span *ngIf="kegs[tap.number] && (tap.status % 2 >= 1)" title="Проблема" class="text-warning"><i class="fas fa-danger"></i></span>
+				<span class="badge badge-danger" *ngIf="kegs[tap.number] && ! prices[kegs[tap.number].keg.beer.id]" title="Неоцененное пиво на кране"><i class="fas fa-hryvnia"></i></span>
 			</td>
       <td>
         <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.brewery.name}}</ng-container>
@@ -154,5 +157,15 @@
   <ng-template contextMenuItem divider="true"></ng-template>
   <ng-template contextMenuItem let-tap [enabled]="hasKegsOnlyInQueue" (execute)="removeFromDirectQueue($event.item)">
     &nbsp;Удалить {{getBeerNameOnDirectQueueOnTap(tap.number)}} из прямой очереди&nbsp;
+  </ng-template>
+	<ng-template contextMenuItem divider="true"></ng-template>
+	<ng-template contextMenuItem let-tap [enabled]="hasKegOnTap" (execute)="repeatBeer($event.item)">
+		&nbsp;Запланировать: повторить {{getBeerNameOnTap(tap.number)}}&nbsp;
+	</ng-template>
+	<ng-template contextMenuItem let-tap (execute)="removeAllFromDirectQueue($event.item)">
+    &nbsp;Запланировать: оставить пустым&nbsp;
+  </ng-template>
+	<ng-template contextMenuItem let-tap (execute)="clearStatus($event.item)">
+    &nbsp;Убрать пометки&nbsp;
   </ng-template>
 </context-menu>
