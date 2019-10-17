@@ -285,6 +285,19 @@ export class TapsQueueComponent implements OnInit {
 		}, this.processError);
 	}
 
+	public markAsProblematic(tap: Tap) {
+		// tslint:disable-next-line:no-bitwise
+		tap.status = tap.status | 1;
+		this.tapService.update(tap.id, tap).subscribe(res => {
+			this.taps.forEach(t => {
+				if (t.number === tap.number) {
+					t.status = res.status;
+				}
+			});
+			this.softRefresh();
+		}, this.processError);
+	}
+
 	private processKegWeight(bkeg: BeerKeg, tapNumber) {
 		const bbkeg = bkeg.keg;
 		const beer = bkeg.beer;

@@ -44,16 +44,19 @@ export class StorageComponent implements OnInit {
 	private routeSubscription: Subscription;
 	private id: string;
 	public kegs: BeerKeg[];
+	public kegs$: BeerKeg[];
 	public beers: Beer[];
 	public breweries: Brewery[];
 	public errorMessage: any;
 	public addingMode = false;
 	public currentBeerKeg: BeerKeg;
 	public editingMode = false;
+	public showAll = true;
 
 	private getKegs() {
 		this.storageService.getKegs(this.id).subscribe(kegs => {
 			this.kegs = kegs;
+			this.filterKegs();
 		}, this.processError);
 	}
 
@@ -90,6 +93,22 @@ export class StorageComponent implements OnInit {
 	ngOnInit() {
 	}
 
+	isInDirectQueue(keg: BeerKeg): boolean {
+		if (!(keg && keg.beerKegsOnTap && keg.beerKegsOnTap.length)) {
+			return false;
+		} else {
+			const bko = keg.beerKegsOnTap.reduce(((pv, cv) => pv.installTime == null
+																												|| cv.installTime != null
+																														&& pv.installTime > cv.installTime ? pv : cv));
+			return bko.tap != null;
+		}
+	}
+
+
+	isInQueue(keg: BeerKeg): boolean {
+		return keg && keg.beerKegsOnTap && keg.beerKegsOnTap.length > 0;
+	}
+
 	startAddingKeg() {
 		this.addingMode = true;
 		this.editingMode = false;
@@ -101,13 +120,13 @@ export class StorageComponent implements OnInit {
 		this.editingMode = false;
 		this.currentBeerKeg = null;
 	}
-	
+
 	startEditingKeg(item: BeerKeg) {
 		this.addingMode = false;
 		this.editingMode = true;
 		this.currentBeerKeg = item;
 	}
-	
+
 	updateKeg(nbeerkeg: NBeerKeg) {
 		const keg = nbeerkeg.item;
 		this.storageService.updateKeg(this.id, keg).subscribe(k => {
@@ -162,5 +181,14 @@ export class StorageComponent implements OnInit {
 	convertDate(value: Date) {
 		const date = moment(value);
 		return new NgbDate(date.year(), date.month() + 1, date.date());
+	}
+
+	switchShowAll() {
+		this.showAll = !this.showAll;
+		this.filterKegs();
+	}
+
+	filterKegs() {
+		this.kegs$ = this.showAll ? this.kegs : this.kegs.filter(bk => !this.isInQueue(bk));
 	}
 }

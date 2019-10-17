@@ -73,7 +73,7 @@
 				{{tap.number}}
 				<span *ngIf="kegs[tap.number] && (tap.status % 16 >= 8)" title="Оставить пустым"><i class="fas fa-thermometer-empty"></i></span>
 				<span *ngIf="kegs[tap.number] && (tap.status % 8 >= 4)" title="Повторить пиво"><i class="fas fa-redo"></i></span>
-				<span *ngIf="kegs[tap.number] && (tap.status % 2 >= 1)" title="Проблема" class="text-warning"><i class="fas fa-danger"></i></span>
+				<span *ngIf="tap.status % 2 >= 1" title="Проблема" class="text-warning"><i class="fas fa-exclamation-triangle"></i></span>
 				<span class="badge badge-danger" *ngIf="kegs[tap.number] && ! prices[kegs[tap.number].keg.beer.id]" title="Неоцененное пиво на кране"><i class="fas fa-hryvnia"></i></span>
 			</td>
       <td>
@@ -164,6 +164,9 @@
 	</ng-template>
 	<ng-template contextMenuItem let-tap (execute)="removeAllFromDirectQueue($event.item)">
     &nbsp;Запланировать: оставить пустым&nbsp;
+  </ng-template>
+	<ng-template contextMenuItem let-tap (execute)="markAsProblematic($event.item)">
+    &nbsp;Пометить: проблема&nbsp;
   </ng-template>
 	<ng-template contextMenuItem let-tap (execute)="clearStatus($event.item)">
     &nbsp;Убрать пометки&nbsp;

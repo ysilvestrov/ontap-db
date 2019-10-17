@@ -12,6 +12,9 @@
     <button class="btn btn-outline-secondary" (click)="refresh()" *ngIf="kegs && beers && breweries">
       <i class="fas fa-sync"></i>
     </button>
+    <button class="btn" [ngClass]="showAll?'btn-outline-secondary':'btn-outline-primary'" (click)="switchShowAll()" *ngIf="kegs && beers && breweries">
+			<i class="fas fa-filter"></i>
+    </button>
   </div>
 </div>
 <ng-container *ngIf="addingMode">
@@ -34,10 +37,13 @@
   </tr>
   </thead>
   <tbody>
-	<ng-container *ngFor="let keg of kegs">
+	<ng-container *ngFor="let keg of kegs$">
 		<tr [contextMenu]="basicMenu" [contextMenuSubject]="keg">
 			<ng-container *ngIf="keg.beer && keg.beer.id != 'NA'; else noBeer">
-				<td>{{keg.beer.brewery.name}}</td>
+				<td>
+					<span *ngIf="isInQueue(keg) && !isInDirectQueue(keg)" title="В общей очереди"><i class="fas fa-stopwatch"></i></span>
+					<span *ngIf="isInDirectQueue(keg)" title="В прямой очереди"><i class="fas fa-traffic-light"></i></span>
+					{{keg.beer.brewery.name}}</td>
 				<td>{{keg.beer.name}}</td>
 				<td>{{keg.beer.alcohol}}</td>
 				<td>{{keg.beer.gravity}}</td>
