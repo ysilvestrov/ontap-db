@@ -22,6 +22,10 @@
 			<i class="fas fa-boxes"></i>&nbsp;
 			<span class="badge badge-light">{{totalInStorage}}</span>
 		</span>&nbsp;
+		<span class="badge badge-info" title="Пиво не в очереди">
+			<i class="fas fa-battery-empty"></i>&nbsp;
+			<span class="badge badge-light">{{totalNotInQueue}}</span>
+		</span>&nbsp;
 		<span class="badge badge-danger" *ngIf="unknownInStorage > 0" title="Неизвестное пиво на складе">
 			<i class="fas fa-exclamation-triangle"></i>&nbsp;
 			<span class="badge badge-light">{{unknownInStorage}}</span>
