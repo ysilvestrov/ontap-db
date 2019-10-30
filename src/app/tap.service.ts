@@ -31,6 +31,10 @@ export class TapService {
 		return this.http.post<BeerKegOnTap[]>(`${this.url}/taps/${tapId}/beer`, this.httpOptions);
 	}
 
+	setFromQueue(tapId: number, keg: BeerKegOnTap) {
+		return this.http.post<BeerKegOnTap[]>(`${this.url}/taps/${tapId}/beer`, keg, this.httpOptions);
+	}
+
 	weightKeg(kegId: number, weight: number) {
 		return this.http.put<BeerKeg>(`${this.url}/beerkegs/${kegId}/weight`, {Weight: weight}, this.httpOptions);
 	}

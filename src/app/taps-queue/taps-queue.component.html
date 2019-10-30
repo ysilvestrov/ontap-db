@@ -1,6 +1,6 @@
-<div class="alert alert-danger" role="alert" *ngIf="errorMessage" style="width:500px;">
-  {{errorMessage}}
-</div>
+<ngb-alert [type]="'danger'" (close)="clearError()" *ngIf="errorMessage">
+	{{ errorMessage }}
+</ngb-alert>
 <div class="row">
   <div class="col-sm-2">
     Dashboard
@@ -80,28 +80,28 @@
 				<span *ngIf="tap.status % 2 >= 1" title="Проблема" class="text-warning"><i class="fas fa-exclamation-triangle"></i></span>
 				<span class="badge badge-danger" *ngIf="kegs[tap.number] && ! prices[kegs[tap.number].keg.beer.id]" title="Неоцененное пиво на кране"><i class="fas fa-hryvnia"></i></span>
 			</td>
-      <td>
-        <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.brewery.name}}</ng-container>
-      </td>
-      <td>
-        <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.name}}</ng-container>
-      </td>
-      <td>
-        <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.alcohol}}</ng-container>
-      </td>
-      <td>
-        <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.gravity}}</ng-container>
-      </td>
-      <td>
-        <ng-container *ngIf="kegs[tap.number]">{{kegs[tap.number].keg.beer.ibu}}</ng-container>
-      </td>
-      <td>
-        <ng-container *ngIf="kegs[tap.number]">
-          <time *ngIf="kegs[tap.number].installTime">{{kegs[tap.number].installTime | amFromUtc | amDateFormat:
-            'YYYY-MM-DD'}}
-          </time>
-        </ng-container>
-      </td>
+			<ng-container *ngIf="kegs[tap.number]">
+				<td>{{kegs[tap.number].keg.beer.brewery.name}}</td>
+				<td>{{kegs[tap.number].keg.beer.name}}</td>
+				<td>{{kegs[tap.number].keg.beer.alcohol}}</td>
+				<td>{{kegs[tap.number].keg.beer.gravity}}</td>
+				<td>{{kegs[tap.number].keg.beer.ibu}}</td>
+				<td>
+						<time *ngIf="kegs[tap.number].installTime">{{kegs[tap.number].installTime | amFromUtc | amDateFormat:
+                'YYYY-MM-DD'}}
+						</time>
+				</td>
+			</ng-container>
+			<ng-container *ngIf="!kegs[tap.number]">
+				<td colspan="6">
+					<section dndDropzone (dndDrop)="setFromQueue($event.data, tap)">&nbsp;
+						<!--optional placeholder element for dropzone-->
+						<!--will be removed from DOM on init-->
+						<div class="drop-dest" dndPlaceholderRef>&nbsp;
+						</div>
+					</section>
+				</td>
+			</ng-container>
       <td>
         <ng-container *ngIf="weights[tap.number]">{{weights[tap.number] | number:'1.1-1'}}</ng-container>
       </td>
@@ -136,7 +136,7 @@
 				</section>
       </td>
 			<td>
-				<ng-container *ngIf="kegs[tap.number]">
+				<ng-container>
 					<button (click)="onContextMenu($event, tap)" class="btn btn-light">...</button>
 				</ng-container>
 			</td>

@@ -59,6 +59,7 @@ export class TapsQueueComponent implements OnInit {
 	public totalNotInQueue: number;
 	public unknownInStorage: number;
 
+	//#region utils
 	private static isNumber(value: string | number): boolean {
 		return !isNaN(Number(value.toString()));
 	}
@@ -79,7 +80,6 @@ export class TapsQueueComponent implements OnInit {
 			return 0;
 		}
 	}
-
 	private static timeCompare(a, b) {
 		if (!a.installTime && b.installTime) {
 			return 1;
@@ -95,18 +95,15 @@ export class TapsQueueComponent implements OnInit {
 		}
 			return 0;
 	}
-
-
 	private static sortByPriority(a: BeerKegOnTap, b: BeerKegOnTap) {
 		return a.priority > b.priority ? -1 : a.priority < b.priority ? 1 : 0;
 	}
-
-	ngOnInit() {
-		// this.getTaps();
-	}
-
 	private calculateRemainingVolume(weight, emptyWeight, gravity, alcohol) {
 		return (weight - emptyWeight) * this.calculator.getGravity(gravity, alcohol);
+	}
+	//#endregion
+
+	ngOnInit() {
 	}
 
 	private getTaps() {
@@ -144,7 +141,7 @@ export class TapsQueueComponent implements OnInit {
 	private getKegs() {
 		this.storageService.getKegs(this.id).subscribe(kegs => {
 			this.totalInStorage = kegs.length;
-			this.totalNotInQueue = kegs.filter(keg => !keg.beerKegsOnTap || keg.beerKegsOnTap.length === 0).length
+			this.totalNotInQueue = kegs.filter(keg => !keg.beerKegsOnTap || keg.beerKegsOnTap.length === 0).length;
 			this.unknownInStorage = kegs.filter((keg: BeerKeg) => keg.beer == null || keg.beer.id === 'NA').length;
 		}, this.processError);
 	}
@@ -246,8 +243,8 @@ export class TapsQueueComponent implements OnInit {
 		}, this.processError);
 	}
 
-	public setFromDirectQueue(tap: Tap) {
-		this.tapService.setFromDirectQueue(tap.id).subscribe(res => {
+	public setFromQueue(keg: BeerKegOnTap, tap: Tap) {
+		this.tapService.setFromQueue(tap.id, keg).subscribe(res => {
 			this.processBeerKegsOnTap(res, tap.number);
 			this.softRefresh();
 		}, this.processError);
@@ -321,6 +318,17 @@ export class TapsQueueComponent implements OnInit {
 			);
 	}
 
+	public refresh() {
+		this.getTaps();
+	}
+
+	public softRefresh() {
+		const _taps: Tap[] = [];
+		this.taps.forEach(t => _taps.push(t));
+		this.taps = _taps;
+	}
+
+	//#region context menu
 	public hasKegOnTap(tap: Tap) {
 		return tap != null
 			&& tap.beerKegsOnTap.filter(bk =>
@@ -362,16 +370,6 @@ export class TapsQueueComponent implements OnInit {
 			);
 	}
 
-	public refresh() {
-		this.getTaps();
-	}
-
-	public softRefresh() {
-		const _taps: Tap[] = [];
-		this.taps.forEach(t => _taps.push(t));
-		this.taps = _taps;
-	}
-
 	public getBeerNameOnTap(tapNumber) {
 		if (this.kegs[tapNumber]) {
 			const keg = this.kegs[tapNumber].keg;
@@ -405,14 +403,14 @@ export class TapsQueueComponent implements OnInit {
 		$event.preventDefault();
 		$event.stopPropagation();
 	}
+	//#endregion
 
 	processError = err => this.errorMessage = err.error.error ?  err.error.error.message : err.error.toString();
 
 	clearError = () => this.errorMessage = null;
 
-	public showPrices(tap: Tap) {
-		this.pricing = tap;
-	}
+	//#region prices
+	showPrices = (tap: Tap) => this.pricing = tap;
 
 	public onPriced(price: IBeerPrice) {
 		price.beer = this.kegs[this.pricing.number].keg.beer;
@@ -422,18 +420,15 @@ export class TapsQueueComponent implements OnInit {
 		price.validFrom = new Date();
 		price.validTo = new Date();
 		this.priceService.priceBeer(this.id, price).subscribe(res => {
-				this.processBeerPrice(res, this.pricing.number);
+				this.processBeerPrice(res);
 				this.softRefresh();
 				this.pricing = null;
 			}
 		);
 	}
 
-	public onPricingCancelled() {
-		this.pricing = null;
-	}
+	onPricingCancelled = () => this.pricing = null;
 
-	private processBeerPrice(price: BeerPrice, tapNumber: string) {
-		this.prices[price.beer.id] = price;
-	}
+	processBeerPrice = (price: BeerPrice) => this.prices[price.beer.id] = price;
+	//#endregion
 }
