@@ -155,7 +155,7 @@
   <ng-template contextMenuItem let-tap [enabled]="hasKegOnTap" (execute)="removeBeer($event.item)">
     &nbsp;Снять {{getBeerNameOnTap(tap.number)}} с крана&nbsp;
   </ng-template>
-  <ng-template contextMenuItem let-tap [enabled]="hasKegsOnlyInQueue" (execute)="setFromDirectQueue($event.item)">
+  <ng-template contextMenuItem let-tap [enabled]="hasKegsOnlyInQueue" (execute)="setFromQueue(null, $event.item)">
     &nbsp;Поставить {{getBeerNameOnDirectQueueOnTap(tap.number)}} из прямой очереди&nbsp;
   </ng-template>
   <ng-template contextMenuItem divider="true"></ng-template>
