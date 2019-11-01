@@ -98,6 +98,11 @@ export class TapsQueueComponent implements OnInit {
 	private static sortByPriority(a: BeerKegOnTap, b: BeerKegOnTap) {
 		return a.priority > b.priority ? -1 : a.priority < b.priority ? 1 : 0;
 	}
+	private static touchArray<T>(source: T[]): T[] {
+		const _: T[] = [];
+		source.forEach(t => _.push(t));
+		return _;
+	}
 	private calculateRemainingVolume(weight, emptyWeight, gravity, alcohol) {
 		return (weight - emptyWeight) * this.calculator.getGravity(gravity, alcohol);
 	}
@@ -323,9 +328,11 @@ export class TapsQueueComponent implements OnInit {
 	}
 
 	public softRefresh() {
-		const _taps: Tap[] = [];
-		this.taps.forEach(t => _taps.push(t));
-		this.taps = _taps;
+		this.taps = TapsQueueComponent.touchArray(this.taps);
+		this.kegs = TapsQueueComponent.touchArray(this.kegs);
+		this.weights = TapsQueueComponent.touchArray(this.weights);
+		this.queue = TapsQueueComponent.touchArray(this.queue);
+		this.directQueue = TapsQueueComponent.touchArray(this.directQueue);
 	}
 
 	//#region context menu
