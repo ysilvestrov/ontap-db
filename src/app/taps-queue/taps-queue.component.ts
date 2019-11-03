@@ -158,29 +158,30 @@ export class TapsQueueComponent implements OnInit {
 		}, this.processError);
 	}
 
-	public processBeerKegsOnTap(kegOnTaps: BeerKegOnTap[], tapNumber) {
-		if (kegOnTaps.length > 0) {
-			kegOnTaps.sort(TapsQueueComponent.timeCompare);
+	public processBeerKegsOnTap(kegsOnTap: BeerKegOnTap[], tapNumber) {
+		if (kegsOnTap.length > 0) {
+			kegsOnTap.sort(TapsQueueComponent.timeCompare);
 
-			const keg = kegOnTaps[0];
+			const keg = kegsOnTap[0];
 
 			if (keg.installTime != null) {
-				this.directQueue[tapNumber] = kegOnTaps.slice(1);
-				this.totalInDirectQueue += kegOnTaps.length - 1;
+				this.directQueue[tapNumber] = kegsOnTap.slice(1);
+				this.totalInDirectQueue += kegsOnTap.length - 1;
 				this.kegs[tapNumber] = keg;
 				this.totalOnTap++;
 			} else {
-				this.directQueue[tapNumber] = kegOnTaps;
+				this.directQueue[tapNumber] = kegsOnTap;
 				this.totalInDirectQueue++;
 			}
 
-			if (keg && keg.tap) {
-				this.taps.forEach(t => {
-					if (t.number === tapNumber) {
+			this.taps.forEach(t => {
+				if (t.number === tapNumber) {
+					t.beerKegsOnTap = kegsOnTap;
+					if (keg && keg.tap) {
 						t.status = keg.tap.status;
 					}
-				});
-			}
+				}
+			});
 
 			if (keg && keg.keg && keg.keg.keg && keg.installTime != null) {
 				this.processKegWeight(keg.keg, tapNumber);
@@ -189,10 +190,15 @@ export class TapsQueueComponent implements OnInit {
 			this.kegs[tapNumber] = null;
 			this.directQueue[tapNumber] = [];
 			this.weights[tapNumber] = null;
+			this.taps.forEach(t => {
+				if (t.number === tapNumber) {
+					t.beerKegsOnTap = [];
+			}});
 		}
 	}
 
 	public processQueue(kegsInQueue: BeerKegOnTap[]) {
+		this.queue = [];
 		kegsInQueue.sort(TapsQueueComponent.sortByPriority)
 			.forEach((value, number) => {
 				if (this.taps && this.taps[number]) {
@@ -206,6 +212,9 @@ export class TapsQueueComponent implements OnInit {
 	public addToDirectQueue(keg: BeerKegOnTap, tap: Tap) {
 		this.tapService.addToDirectQueue(tap.id, keg).subscribe(res =>  {
 			this.processBeerKegsOnTap(res, tap.number);
+			if (res.some(bk => bk.id === keg.id)) {
+				this.processQueue(this.queue.filter(bk => bk.id !== keg.id));
+			}
 			this.softRefresh();
 		});
 	}
@@ -266,6 +275,8 @@ export class TapsQueueComponent implements OnInit {
 		const keg = this.directQueue[tap.number][0];
 		this.tapService.removeFromDirectQueue(tap.id, keg).subscribe(res => {
 			this.processBeerKegsOnTap(res, tap.number);
+			this.queue.push(keg);
+			this.processQueue(this.queue);
 			this.softRefresh();
 		}, this.processError);
 	}

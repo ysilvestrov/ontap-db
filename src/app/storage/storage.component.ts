@@ -87,6 +87,7 @@ export class StorageComponent implements OnInit {
 					kegs = kegs.splice(index, 1);
 				}
 			}});
+			this.filterKegs();
 		}, this.processError);
 	}
 
@@ -133,6 +134,7 @@ export class StorageComponent implements OnInit {
 			const _kegs = [];
 			this.kegs.forEach(_ => _.id === keg.id ? _kegs.push(k) : _kegs.push(_));
 			this.kegs = _kegs;
+			this.filterKegs();
 		}, this.processError);
 		this.editingMode = false;
 	}
@@ -145,6 +147,7 @@ export class StorageComponent implements OnInit {
 			this.kegs.forEach(_ => _kegs.push(_));
 			k.forEach(_ => _kegs.push(_));
 			this.kegs = _kegs;
+			this.filterKegs();
 		}, this.processError);
 		this.addingMode = false;
 	}
