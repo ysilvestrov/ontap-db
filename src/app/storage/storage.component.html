@@ -58,18 +58,10 @@
 				</td>
 			</ng-template>
 			<td>
-				<ng-container *ngIf="keg">
-					<time *ngIf="keg.packageDate">{{keg.packageDate | amFromUtc | amDateFormat: 'DD MMM'}}<sup *ngIf="yearDiff(keg.packageDate)>0">
-						<span class="badge badge-light">{{yearDiff(keg.packageDate)*-1| number:'1.0-0'| addPlusSign}}</span>
-					</sup></time>
-				</ng-container>
+				<app-short-date *ngIf="keg" [date]="keg.packageDate"></app-short-date>
 			</td>
 			<td>
-				<ng-container *ngIf="keg">
-					<time *ngIf="keg.bestBeforeDate" [title]="keg.bestBeforeDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'">{{keg.bestBeforeDate | amFromUtc | amDateFormat: 'DD MMM'}}<sup *ngIf="yearDiff(keg.packageDate)>0">
-						<span class="badge badge-light">{{yearDiff(keg.packageDate)| number:'1.0-0'| addPlusSign}}</span>
-					</sup></time>
-				</ng-container>
+				<app-short-date *ngIf="keg" [date]="keg.bestBeforeDate"></app-short-date>
 			</td>
 			<td>
 				<ng-container *ngIf="keg">

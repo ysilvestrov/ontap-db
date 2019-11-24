@@ -1,0 +1,3 @@
+<time *ngIf="date" [title]="date | amFromUtc | amDateFormat: 'YYYY-MM-DD'">{{date | amFromUtc | amDateFormat: 'DD MMM'}}<sup *ngIf="yearDiff(date)!=0">
+	<span class="badge badge-light">{{yearDiff(date)| number:'1.0-0'| addPlusSign}}</span>
+</sup></time>

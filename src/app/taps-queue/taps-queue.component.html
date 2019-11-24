@@ -89,9 +89,7 @@
 				<td>{{kegs[tap.number].keg.beer.gravity}}</td>
 				<td>{{kegs[tap.number].keg.beer.ibu}}</td>
 				<td>
-						<time *ngIf="kegs[tap.number].installTime">{{kegs[tap.number].installTime | amFromUtc | amDateFormat:
-                'YYYY-MM-DD'}}
-						</time>
+					<app-short-date [date]="kegs[tap.number].installTime" direction="desc"></app-short-date>
 				</td>
 			</ng-container>
 			<ng-container *ngIf="!kegs[tap.number]">
