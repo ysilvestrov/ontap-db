@@ -26,13 +26,13 @@
 <table class="table">
   <thead>
   <tr>
-    <th>Производитель</th>
-    <th>Сорт</th>
-    <th>ABV</th>
-    <th>OG</th>
-    <th>IBU</th>
-    <th>Упаковано</th>
-    <th>Годно до</th>
+    <th sortable="brewery" (sort)="onSort($event)">Производитель</th>
+    <th sortable="beer" (sort)="onSort($event)">Сорт</th>
+    <th sortable="abv" (sort)="onSort($event)">ABV</th>
+    <th sortable="og"  (sort)="onSort($event)">OG</th>
+    <th sortable="ibu"  (sort)="onSort($event)">IBU</th>
+    <th sortable="packed"  (sort)="onSort($event)">Упаковано</th>
+    <th sortable="best-before"  (sort)="onSort($event)">Годно до</th>
     <th>&nbsp;</th>
   </tr>
   </thead>

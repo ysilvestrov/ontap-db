@@ -24,6 +24,7 @@ import {DndModule} from 'ngx-drag-drop';
 import { WeightEditorComponent } from './weight-editor/weight-editor.component';
 import { BeerKegEditorComponent } from './beer-keg-editor/beer-keg-editor.component';
 import { BeerPriceEditorComponent } from './beer-price-editor/beer-price-editor.component';
+import { SortableHeaderDirective } from './sortable-header.directive';
 
 const itemRoutes: Routes = [
 	{ path: 'queue', component: TapsQueueComponent},
@@ -56,6 +57,7 @@ const appRoutes: Routes = [
 		WeightEditorComponent,
 		BeerKegEditorComponent,
 		BeerPriceEditorComponent,
+		SortableHeaderDirective,
 	],
 	imports: [
 		BrowserModule,

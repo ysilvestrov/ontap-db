@@ -1,8 +1,8 @@
-import {Component, OnInit, Pipe, PipeTransform, ViewChild} from '@angular/core';
+import {Component, OnInit, Pipe, PipeTransform, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
-import {Beer, BeerKeg, Brewery, Keg, Tap} from '../ontap.models';
+import {Beer, BeerKeg, Brewery, IBeerKeg, Keg, Tap} from '../ontap.models';
 import {StorageService} from '../storage.service';
 import {ContextMenuComponent, ContextMenuService} from 'ngx-contextmenu';
 import {QueueService} from '../queue.service';
@@ -12,6 +12,7 @@ import {BreweryService} from '../brewery.service';
 import * as moment from 'moment';
 import {NgbDate} from '@ng-bootstrap/ng-bootstrap';
 import {NBeerKeg} from '../beer-keg-editor/beer-keg-editor.component';
+import {compare, SortableHeaderDirective, SortEvent} from '../sortable-header.directive';
 
 @Pipe({
 	name: 'addPlusSign'
@@ -51,6 +52,7 @@ export class StorageComponent implements OnInit {
 	}
 
 	@ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
+	@ViewChildren(SortableHeaderDirective) headers: QueryList<SortableHeaderDirective>;
 
 	private routeSubscription: Subscription;
 	private id: string;
@@ -63,11 +65,13 @@ export class StorageComponent implements OnInit {
 	public currentBeerKeg: BeerKeg;
 	public editingMode = false;
 	public showAll = true;
+	public sortOrder = '';
+	public sortColumn = '';
 
 	private getKegs() {
 		this.storageService.getKegs(this.id).subscribe(kegs => {
 			this.kegs = kegs;
-			this.filterKegs();
+			this.filterAndReorderKegs();
 		}, this.processError);
 	}
 
@@ -98,11 +102,25 @@ export class StorageComponent implements OnInit {
 					kegs = kegs.splice(index, 1);
 				}
 			}});
-			this.filterKegs();
+			this.filterAndReorderKegs();
 		}, this.processError);
 	}
 
 	ngOnInit() {
+	}
+
+	onSort({column, direction}: SortEvent) {
+
+		// resetting other headers
+		this.headers.forEach(header => {
+			if (header.sortable !== column) {
+				header.direction = '';
+			}
+		});
+		this.sortOrder = direction;
+		this.sortColumn = column;
+
+		this.filterAndReorderKegs();
 	}
 
 	// region utils
@@ -151,7 +169,7 @@ export class StorageComponent implements OnInit {
 			const _kegs = [];
 			this.kegs.forEach(_ => _.id === keg.id ? _kegs.push(k) : _kegs.push(_));
 			this.kegs = _kegs;
-			this.filterKegs();
+			this.filterAndReorderKegs();
 		}, this.processError);
 		this.editingMode = false;
 	}
@@ -164,7 +182,7 @@ export class StorageComponent implements OnInit {
 			this.kegs.forEach(_ => _kegs.push(_));
 			k.forEach(_ => _kegs.push(_));
 			this.kegs = _kegs;
-			this.filterKegs();
+			this.filterAndReorderKegs();
 		}, this.processError);
 		this.addingMode = false;
 	}
@@ -205,10 +223,30 @@ export class StorageComponent implements OnInit {
 
 	switchShowAll() {
 		this.showAll = !this.showAll;
-		this.filterKegs();
+		this.filterAndReorderKegs();
 	}
 
-	filterKegs() {
-		this.kegs$ = this.showAll ? this.kegs : this.kegs.filter(bk => !this.isInQueue(bk));
+	filterAndReorderKegs() {
+		let kegs = this.showAll ? this.kegs : this.kegs.filter(bk => !this.isInQueue(bk));
+		if (this.sortOrder) {
+			kegs = [...kegs].sort((a, b) => {
+				const res = compare(this.getColumn(a, this.sortColumn), this.getColumn(b, this.sortColumn));
+				return this.sortOrder === 'asc' ? res : -res;
+			});
+		}
+		this.kegs$ = kegs;
+	}
+
+	getColumn (keg: IBeerKeg, column: string): any {
+		switch (column) {
+			case 'beer': return keg.beer.name;
+			case 'brewery': return keg.beer.brewery.name;
+			case 'abv': return keg.beer.alcohol;
+			case 'og': return keg.beer.gravity;
+			case 'ibu': return keg.beer.ibu;
+			case 'packed': return keg.packageDate;
+			case 'best-before': return keg.bestBeforeDate;
+		}
+
 	}
 }
