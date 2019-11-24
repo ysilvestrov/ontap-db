@@ -18,7 +18,7 @@ import { TapsQueueComponent } from './taps-queue/taps-queue.component';
 import { TapsPrintComponent } from './taps-print/taps-print.component';
 import { SortByTapPipe } from './sort-by-tap.pipe';
 import {MomentModule} from 'ngx-moment';
-import { StorageComponent } from './storage/storage.component';
+import {AddPlusSignPipe, StorageComponent} from './storage/storage.component';
 import {ContextMenuModule} from 'ngx-contextmenu';
 import {DndModule} from 'ngx-drag-drop';
 import { WeightEditorComponent } from './weight-editor/weight-editor.component';
@@ -51,6 +51,7 @@ const appRoutes: Routes = [
 		TapsQueueComponent,
 		TapsPrintComponent,
 		SortByTapPipe,
+		AddPlusSignPipe,
 		StorageComponent,
 		WeightEditorComponent,
 		BeerKegEditorComponent,

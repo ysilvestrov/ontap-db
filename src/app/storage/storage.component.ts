@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, Pipe, PipeTransform, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
@@ -12,6 +12,17 @@ import {BreweryService} from '../brewery.service';
 import * as moment from 'moment';
 import {NgbDate} from '@ng-bootstrap/ng-bootstrap';
 import {NBeerKeg} from '../beer-keg-editor/beer-keg-editor.component';
+
+@Pipe({
+	name: 'addPlusSign'
+})
+export class AddPlusSignPipe implements PipeTransform {
+
+	transform(value: any, args?: any): any {
+		return value.charAt(0) === '-' ? value : '+' + value;
+
+	}
+}
 
 @Component({
 	selector: 'app-storage',
@@ -93,6 +104,12 @@ export class StorageComponent implements OnInit {
 
 	ngOnInit() {
 	}
+
+	// region utils
+	yearDiff(date: Date) {
+		return moment().diff(date, 'years');
+	}
+	// endregion
 
 	isInDirectQueue(keg: BeerKeg): boolean {
 		if (!(keg && keg.beerKegsOnTap && keg.beerKegsOnTap.length)) {

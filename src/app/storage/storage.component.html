@@ -41,8 +41,9 @@
 		<tr [contextMenu]="basicMenu" [contextMenuSubject]="keg">
 			<ng-container *ngIf="keg.beer && keg.beer.id != 'NA'; else noBeer">
 				<td>
-					<span *ngIf="isInQueue(keg) && !isInDirectQueue(keg)" title="В общей очереди"><i class="fas fa-stopwatch"></i></span>
-					<span *ngIf="isInDirectQueue(keg)" title="В прямой очереди"><i class="fas fa-traffic-light"></i></span>
+					<span *ngIf="isInQueue(keg) && !isInDirectQueue(keg)" title="В общей очереди"><i class="fas fa-stopwatch"></i>&nbsp;</span>
+					<span *ngIf="isInDirectQueue(keg)" title="В прямой очереди"><i class="fas fa-traffic-light"></i>&nbsp;</span>
+					<span *ngIf="keg.beer.brewery.country" [ngClass]="'flag-icon flag-icon-squared flag-icon-'+keg.beer.brewery.country.id.toLocaleLowerCase() "></span>
 					{{keg.beer.brewery.name}}</td>
 				<td>{{keg.beer.name}}</td>
 				<td>{{keg.beer.alcohol}}</td>
@@ -58,12 +59,16 @@
 			</ng-template>
 			<td>
 				<ng-container *ngIf="keg">
-					<time *ngIf="keg.packageDate">{{keg.packageDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
+					<time *ngIf="keg.packageDate">{{keg.packageDate | amFromUtc | amDateFormat: 'DD MMM'}}<sup *ngIf="yearDiff(keg.packageDate)>0">
+						<span class="badge badge-light">{{yearDiff(keg.packageDate)*-1| number:'1.0-0'| addPlusSign}}</span>
+					</sup></time>
 				</ng-container>
 			</td>
 			<td>
 				<ng-container *ngIf="keg">
-					<time *ngIf="keg.bestBeforeDate">{{keg.bestBeforeDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'}}</time>
+					<time *ngIf="keg.bestBeforeDate" [title]="keg.bestBeforeDate | amFromUtc | amDateFormat: 'YYYY-MM-DD'">{{keg.bestBeforeDate | amFromUtc | amDateFormat: 'DD MMM'}}<sup *ngIf="yearDiff(keg.packageDate)>0">
+						<span class="badge badge-light">{{yearDiff(keg.packageDate)| number:'1.0-0'| addPlusSign}}</span>
+					</sup></time>
 				</ng-container>
 			</td>
 			<td>

@@ -81,7 +81,9 @@
 				<span class="badge badge-danger" *ngIf="kegs[tap.number] && ! prices[kegs[tap.number].keg.beer.id]" title="Неоцененное пиво на кране"><i class="fas fa-hryvnia"></i></span>
 			</td>
 			<ng-container *ngIf="kegs[tap.number]">
-				<td>{{kegs[tap.number].keg.beer.brewery.name}}</td>
+				<td>
+					<span *ngIf="kegs[tap.number].keg.beer.brewery.country" [ngClass]="'flag-icon flag-icon-squared flag-icon-'+kegs[tap.number].keg.beer.brewery.country.id.toLocaleLowerCase() "></span>
+					{{kegs[tap.number].keg.beer.brewery.name}}</td>
 				<td>{{kegs[tap.number].keg.beer.name}}</td>
 				<td>{{kegs[tap.number].keg.beer.alcohol}}</td>
 				<td>{{kegs[tap.number].keg.beer.gravity}}</td>
