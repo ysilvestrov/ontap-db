@@ -246,6 +246,7 @@ export class StorageComponent implements OnInit {
 			case 'ibu': return keg.beer.ibu;
 			case 'packed': return keg.packageDate;
 			case 'best-before': return keg.bestBeforeDate;
+			case 'arrival': return keg.arrivalDate;
 		}
 
 	}

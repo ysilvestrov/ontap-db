@@ -3,7 +3,7 @@
 </ngb-alert>
 <div class="row">
   <div class="col-sm-10">
-    Склад
+    Склад ({{kegs$.length}}<ng-container *ngIf="kegs$.length != kegs.length">/{{kegs.length}}</ng-container>)
   </div>
   <div class="col-sm-2">
     <button class="btn btn-outline-primary" (click)="startAddingKeg()" *ngIf="beers && breweries && !addingMode">
@@ -33,6 +33,7 @@
     <th sortable="ibu"  (sort)="onSort($event)">IBU</th>
     <th sortable="packed"  (sort)="onSort($event)">Упаковано</th>
     <th sortable="best-before"  (sort)="onSort($event)">Годно до</th>
+    <th sortable="arrival"  (sort)="onSort($event)">Приход</th>
     <th>&nbsp;</th>
   </tr>
   </thead>
@@ -62,6 +63,9 @@
 			</td>
 			<td>
 				<app-short-date *ngIf="keg" [date]="keg.bestBeforeDate"></app-short-date>
+			</td>
+			<td>
+				<app-short-date *ngIf="keg" [date]="keg.arrivalDate"></app-short-date>
 			</td>
 			<td>
 				<ng-container *ngIf="keg">
