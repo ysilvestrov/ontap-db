@@ -32,7 +32,7 @@
     "express": "^4.16.3",
     "flag-icon-css": "^3.4.5",
     "http-proxy-middleware": "^0.19.0",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "ngx-contextmenu": "^5.1.1",
     "ngx-drag-drop": "^1.1.0",
     "ngx-moment": "^3.1.0",
